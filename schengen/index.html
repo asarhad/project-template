@@ -1,0 +1,1055 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schengen 90/180 Calculator</title>
+</head>
+<body>
+<style>
+/* ============================================================
+   Tokens — stamp ink on document paper
+   ============================================================ */
+:root{
+  --paper:#F1F0EC; --card:#FFFFFF; --card-2:#F7F6F3;
+  --ink:#191821; --ink-2:#4A4857; --ink-3:#78758A;
+  --rule:#DCDAD4; --rule-2:#EAE8E3;
+  --accent:#5A46A5; --accent-soft:#EBE7F7;
+  --ok:#2A6B4F;   --ok-soft:#E3EFE9;
+  --warn:#9C6407; --warn-soft:#F6EDDC;
+  --crit:#AC3324; --crit-soft:#F8E4E1;
+  --cell-empty:#E1DFD9; --cell-future-line:#B9B5C9;
+  --shadow:0 1px 2px rgba(25,24,33,.05), 0 8px 24px -12px rgba(25,24,33,.18);
+
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#121117; --card:#1B1A22; --card-2:#232231;
+    --ink:#EAE9F0; --ink-2:#ADAABE; --ink-3:#807C95;
+    --rule:#312F3D; --rule-2:#26242F;
+    --accent:#A695E9; --accent-soft:#2A2542;
+    --ok:#54B389;   --ok-soft:#16302A;
+    --warn:#DFA347; --warn-soft:#332714;
+    --crit:#E86D5E; --crit-soft:#3A1E1A;
+    --cell-empty:#2C2A37; --cell-future-line:#575370;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="light"]{
+  --paper:#F1F0EC; --card:#FFFFFF; --card-2:#F7F6F3;
+  --ink:#191821; --ink-2:#4A4857; --ink-3:#78758A;
+  --rule:#DCDAD4; --rule-2:#EAE8E3;
+  --accent:#5A46A5; --accent-soft:#EBE7F7;
+  --ok:#2A6B4F;   --ok-soft:#E3EFE9;
+  --warn:#9C6407; --warn-soft:#F6EDDC;
+  --crit:#AC3324; --crit-soft:#F8E4E1;
+  --cell-empty:#E1DFD9; --cell-future-line:#B9B5C9;
+  --shadow:0 1px 2px rgba(25,24,33,.05), 0 8px 24px -12px rgba(25,24,33,.18);
+}
+:root[data-theme="dark"]{
+  --paper:#121117; --card:#1B1A22; --card-2:#232231;
+  --ink:#EAE9F0; --ink-2:#ADAABE; --ink-3:#807C95;
+  --rule:#312F3D; --rule-2:#26242F;
+  --accent:#A695E9; --accent-soft:#2A2542;
+  --ok:#54B389;   --ok-soft:#16302A;
+  --warn:#DFA347; --warn-soft:#332714;
+  --crit:#E86D5E; --crit-soft:#3A1E1A;
+  --cell-empty:#2C2A37; --cell-future-line:#575370;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{margin:0}
+.sg{
+  background:var(--paper); color:var(--ink);
+  font-family:var(--sans); font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  padding:32px 20px 72px;
+}
+.sg-wrap{max-width:1080px; margin:0 auto; display:flex; flex-direction:column; gap:20px}
+
+/* ---------- shared type ---------- */
+.sg h1,.sg h2,.sg h3{margin:0; text-wrap:balance}
+.sg h1{
+  font-family:var(--mono); font-size:22px; font-weight:600;
+  letter-spacing:.16em; text-transform:uppercase;
+}
+.sg h2{
+  font-family:var(--mono); font-size:12px; font-weight:600;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--ink-3);
+}
+.sg h3{font-family:var(--sans); font-size:15px; font-weight:650}
+.lbl{
+  font-family:var(--mono); font-size:10.5px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3);
+}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+.sg p{margin:0}
+
+/* ---------- masthead ---------- */
+.masthead{
+  display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between;
+  gap:12px; padding-bottom:16px; border-bottom:1px solid var(--rule);
+}
+.masthead .sub{color:var(--ink-2); font-size:14px; margin-top:6px; max-width:62ch}
+.mrz{
+  font-family:var(--mono); font-size:11px; letter-spacing:.1em;
+  color:var(--ink-3); text-align:right; white-space:nowrap;
+}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--card); border:1px solid var(--rule); border-radius:4px;
+  box-shadow:var(--shadow); padding:20px;
+}
+.panel-head{
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
+  gap:12px; margin-bottom:16px;
+}
+
+/* ---------- verdict ---------- */
+.verdict{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:28px; align-items:center}
+@media (max-width:760px){.verdict{grid-template-columns:1fr}}
+
+.gauge-head{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+.gauge-num{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:58px; line-height:.95; font-weight:600; letter-spacing:-.02em}
+.gauge-of{font-family:var(--mono); font-size:15px; color:var(--ink-3); letter-spacing:.06em}
+.bar{
+  margin-top:16px; height:12px; border-radius:2px; background:var(--cell-empty);
+  display:flex; overflow:hidden; border:1px solid var(--rule);
+}
+.bar-used{background:var(--accent)}
+.bar-over{background:var(--crit)}
+.bar-plan{background:var(--accent); opacity:.42}
+.facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px 22px; margin:20px 0 0}
+.fact dt{margin-bottom:3px}
+.fact dd{margin:0; font-family:var(--mono); font-size:14px; font-variant-numeric:tabular-nums; color:var(--ink)}
+.fact dd .muted{color:var(--ink-3)}
+
+/* the stamp */
+.stamp{
+  transform:rotate(-2.5deg);
+  border:2px solid currentColor; border-radius:3px;
+  padding:12px 20px 10px; text-align:center; min-width:212px;
+  position:relative; color:var(--ok); background:var(--ok-soft);
+}
+.stamp::after{
+  content:""; position:absolute; inset:3px; border:1px solid currentColor;
+  border-radius:2px; opacity:.42; pointer-events:none;
+}
+.stamp[data-state="over"]{color:var(--crit); background:var(--crit-soft)}
+.stamp[data-state="tight"]{color:var(--warn); background:var(--warn-soft)}
+.stamp-main{
+  font-family:var(--mono); font-size:16px; font-weight:700;
+  letter-spacing:.13em; text-transform:uppercase; line-height:1.25;
+}
+.stamp-sub{
+  font-family:var(--mono); font-size:10px; letter-spacing:.19em;
+  text-transform:uppercase; margin-top:6px; opacity:.8;
+}
+
+/* ---------- window strip ---------- */
+.strip{
+  display:grid; grid-template-columns:repeat(180,1fr); gap:1px;
+  height:56px; align-items:stretch;
+}
+.cell{background:var(--cell-empty); border-radius:1px; min-width:0}
+.cell[data-in="1"]{background:var(--accent)}
+.cell[data-in="1"][data-future="1"]{background:var(--accent); opacity:.45}
+.cell[data-today="1"]{outline:2px solid var(--ink); outline-offset:1px; z-index:2; position:relative}
+.months{
+  display:grid; grid-template-columns:repeat(180,1fr); gap:1px; margin-top:6px;
+  border-top:1px solid var(--rule-2); padding-top:5px;
+}
+.month{
+  font-family:var(--mono); font-size:10px; letter-spacing:.08em; color:var(--ink-3);
+  text-transform:uppercase; overflow:hidden; white-space:nowrap; min-width:0;
+  border-left:1px solid var(--rule); padding-left:4px;
+}
+.readout{
+  margin-top:14px; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--ink-2); min-height:1.5em;
+}
+.readout b{color:var(--ink); font-weight:600}
+.keys{display:flex; flex-wrap:wrap; gap:16px; margin-top:12px}
+.key{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--ink-2)}
+.swatch{width:12px; height:12px; border-radius:2px; background:var(--cell-empty); flex:none}
+.swatch.in{background:var(--accent)}
+.swatch.plan{background:var(--accent); opacity:.45}
+
+/* ---------- controls ---------- */
+.ctrls{display:flex; flex-wrap:wrap; align-items:center; gap:8px}
+.sg button{
+  font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-2); background:var(--card-2);
+  border:1px solid var(--rule); border-radius:3px; padding:7px 11px; cursor:pointer;
+  transition:border-color .12s, color .12s, background .12s;
+}
+.sg button:hover{border-color:var(--accent); color:var(--accent)}
+.sg button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.sg button.primary{background:var(--accent); border-color:var(--accent); color:#fff}
+:root[data-theme="dark"] .sg button.primary,
+.sg button.primary{color:#fff}
+@media (prefers-color-scheme: dark){.sg button.primary{color:#17141F}}
+:root[data-theme="dark"] .sg button.primary{color:#17141F}
+:root[data-theme="light"] .sg button.primary{color:#fff}
+.sg button.primary:hover{opacity:.88; color:inherit}
+.sg button.danger:hover{border-color:var(--crit); color:var(--crit)}
+.sg input[type="date"], .sg input[type="text"], .sg input[type="number"]{
+  font-family:var(--mono); font-size:13px; color:var(--ink);
+  background:var(--card-2); border:1px solid var(--rule); border-radius:3px;
+  padding:7px 9px; min-width:0; width:100%;
+}
+.sg input:focus-visible{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
+.field{display:flex; flex-direction:column; gap:5px; min-width:0}
+
+/* ---------- chart ---------- */
+.chart-box{position:relative; width:100%; height:220px}
+.chart-box canvas{width:100%; height:100%; display:block; cursor:crosshair}
+.chart-tip{
+  position:absolute; pointer-events:none; opacity:0; transition:opacity .1s;
+  background:var(--card); border:1px solid var(--rule); border-radius:3px;
+  box-shadow:var(--shadow); padding:8px 10px; font-family:var(--mono);
+  font-size:12px; font-variant-numeric:tabular-nums; white-space:nowrap; z-index:5;
+}
+.chart-tip .d{color:var(--ink-3); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:3px}
+.chart-tip .v{color:var(--ink); font-weight:600}
+
+/* ---------- trips table ---------- */
+.tbl-scroll{overflow-x:auto; margin:0 -4px; padding:0 4px}
+table.trips{width:100%; border-collapse:collapse; font-size:14px; min-width:620px}
+table.trips th{
+  text-align:left; font-family:var(--mono); font-size:10px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3);
+  padding:0 12px 8px 0; border-bottom:1px solid var(--rule);
+}
+table.trips td{padding:11px 12px 11px 0; border-bottom:1px solid var(--rule-2); vertical-align:middle}
+table.trips tr:last-child td{border-bottom:none}
+table.trips td.n{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+table.trips td.act{text-align:right; white-space:nowrap}
+table.trips td.act button{padding:5px 8px; font-size:10px}
+.chip{
+  display:inline-block; font-family:var(--mono); font-size:9.5px; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; padding:3px 7px; border-radius:2px;
+  background:var(--card-2); color:var(--ink-3); border:1px solid var(--rule);
+}
+.chip.future{background:var(--accent-soft); color:var(--accent); border-color:transparent}
+.chip.now{background:var(--ok-soft); color:var(--ok); border-color:transparent}
+.empty{color:var(--ink-3); font-size:14px; padding:18px 0}
+
+/* add / edit form */
+.trip-form{
+  display:grid; grid-template-columns:1.4fr 1fr 1fr auto; gap:12px; align-items:end;
+  padding:16px; background:var(--card-2); border:1px solid var(--rule-2);
+  border-radius:3px; margin-bottom:18px;
+}
+@media (max-width:700px){.trip-form{grid-template-columns:1fr 1fr}.trip-form .span2{grid-column:span 2}}
+
+/* ---------- planner ---------- */
+.plan-form{display:grid; grid-template-columns:1fr 1fr 1.2fr auto; gap:12px; align-items:end}
+@media (max-width:700px){.plan-form{grid-template-columns:1fr 1fr}}
+.result{margin-top:18px; border-left:3px solid var(--ink-3); padding:14px 16px; background:var(--card-2); border-radius:0 3px 3px 0}
+.result[data-state="ok"]{border-left-color:var(--ok); background:var(--ok-soft)}
+.result[data-state="over"]{border-left-color:var(--crit); background:var(--crit-soft)}
+.result[data-state="tight"]{border-left-color:var(--warn); background:var(--warn-soft)}
+.result-title{font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase}
+.result[data-state="ok"] .result-title{color:var(--ok)}
+.result[data-state="over"] .result-title{color:var(--crit)}
+.result[data-state="tight"] .result-title{color:var(--warn)}
+.result ul{margin:10px 0 0; padding-left:18px; display:flex; flex-direction:column; gap:6px}
+.result li{font-size:14px; color:var(--ink-2)}
+.result li b{color:var(--ink); font-family:var(--mono); font-variant-numeric:tabular-nums; font-weight:600}
+.result-actions{margin-top:14px}
+
+/* ---------- notices ---------- */
+.notice{
+  border-left:3px solid var(--warn); background:var(--warn-soft); color:var(--ink);
+  padding:11px 14px; border-radius:0 3px 3px 0; font-size:13.5px;
+}
+.notice b{font-family:var(--mono); letter-spacing:.06em; text-transform:uppercase; font-size:11px; color:var(--warn); display:block; margin-bottom:3px}
+
+/* ---------- rules ---------- */
+.rules ol{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:9px; max-width:74ch}
+.rules li{color:var(--ink-2); font-size:14.5px}
+.rules li b{color:var(--ink)}
+.rules .cite{margin-top:16px; font-family:var(--mono); font-size:11px; letter-spacing:.06em; color:var(--ink-3)}
+
+/* ---------- footer ---------- */
+.foot{display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; padding-top:6px}
+.disclaimer{font-size:12.5px; color:var(--ink-3); max-width:60ch}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+@media (prefers-reduced-motion: reduce){.sg *{transition:none !important}}
+</style>
+
+<div class="sg">
+<div class="sg-wrap">
+
+  <header class="masthead">
+    <div>
+      <h1>Schengen 90 / 180</h1>
+      <p class="sub">A rolling-window day counter for short stays in the Schengen area. Your trips are saved in this browser.</p>
+    </div>
+    <div class="mrz" id="mrz"></div>
+  </header>
+
+  <div id="overlapNotice"></div>
+
+  <!-- ================= VERDICT ================= -->
+  <section class="card verdict" aria-labelledby="v-h">
+    <div>
+      <h2 id="v-h">Status on <span id="verdictDateLabel" class="num"></span></h2>
+      <div class="gauge-head" style="margin-top:10px">
+        <span class="gauge-num" id="gaugeNum">0</span>
+        <span class="gauge-of">days used &nbsp;/&nbsp; 90 allowed</span>
+      </div>
+      <div class="bar" id="bar" role="img" aria-labelledby="v-h"></div>
+      <dl class="facts">
+        <div class="fact"><dt class="lbl">Days remaining</dt><dd id="fRemain">—</dd></div>
+        <div class="fact"><dt class="lbl">180-day window</dt><dd id="fWindow">—</dd></div>
+        <div class="fact"><dt class="lbl">Longest stay from today</dt><dd id="fFromToday">—</dd></div>
+        <div class="fact"><dt class="lbl">Days coming back</dt><dd id="fRegain">—</dd></div>
+        <div class="fact"><dt class="lbl">Next clean 90-day slot</dt><dd id="fReset">—</dd></div>
+        <div class="fact"><dt class="lbl">Worst day on record</dt><dd id="fWorst">—</dd></div>
+      </dl>
+    </div>
+    <div class="stamp" id="stamp" data-state="ok">
+      <div class="stamp-main" id="stampMain">WITHIN LIMITS</div>
+      <div class="stamp-sub" id="stampSub">—</div>
+    </div>
+  </section>
+
+  <!-- ================= WINDOW STRIP ================= -->
+  <section class="card" aria-labelledby="w-h">
+    <div class="panel-head">
+      <div>
+        <h2 id="w-h">The 180-day window</h2>
+        <p style="color:var(--ink-2); font-size:13.5px; margin-top:6px">One cell per day. The window ends on the date below and reaches back 179 days — everything older has dropped out.</p>
+      </div>
+      <div class="ctrls">
+        <label class="sr" for="winEnd">Window end date</label>
+        <input type="date" id="winEnd" style="width:auto">
+        <button type="button" id="btnToday">Today</button>
+        <button type="button" id="btnWorst">Worst day</button>
+      </div>
+    </div>
+    <div class="strip" id="strip" role="img" aria-label="180-day presence strip"></div>
+    <div class="months" id="months"></div>
+    <div class="readout" id="readout"></div>
+    <div class="keys">
+      <span class="key"><span class="swatch in"></span> Days recorded</span>
+      <span class="key"><span class="swatch plan"></span> Days still in the future</span>
+      <span class="key"><span class="swatch"></span> Outside Schengen</span>
+    </div>
+  </section>
+
+  <!-- ================= CHART ================= -->
+  <section class="card" aria-labelledby="c-h">
+    <div class="panel-head">
+      <div>
+        <h2 id="c-h">Days used, day by day</h2>
+        <p style="color:var(--ink-2); font-size:13.5px; margin-top:6px" id="chartSummary"></p>
+      </div>
+    </div>
+    <div class="chart-box">
+      <canvas id="chart"></canvas>
+      <div class="chart-tip" id="chartTip"></div>
+    </div>
+  </section>
+
+  <!-- ================= TRIPS ================= -->
+  <section class="card" aria-labelledby="t-h">
+    <div class="panel-head">
+      <h2 id="t-h">Your trips</h2>
+      <div class="ctrls"><span class="lbl" id="tripTotals"></span></div>
+    </div>
+
+    <form class="trip-form" id="tripForm">
+      <div class="field span2">
+        <label class="lbl" for="fCountry">Country</label>
+        <input type="text" id="fCountry" placeholder="Greece" autocomplete="off">
+      </div>
+      <div class="field">
+        <label class="lbl" for="fEntry">Entry date</label>
+        <input type="date" id="fEntry" required>
+      </div>
+      <div class="field">
+        <label class="lbl" for="fExit">Exit date</label>
+        <input type="date" id="fExit" required>
+      </div>
+      <div class="ctrls">
+        <button type="submit" class="primary" id="btnSave">Add trip</button>
+        <button type="button" id="btnCancelEdit" hidden>Cancel</button>
+      </div>
+    </form>
+
+    <div class="tbl-scroll">
+      <table class="trips">
+        <thead>
+          <tr><th>Country</th><th>Entry</th><th>Exit</th><th>Days</th><th></th><th></th></tr>
+        </thead>
+        <tbody id="tripBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= PLANNER ================= -->
+  <section class="card" aria-labelledby="p-h">
+    <div class="panel-head">
+      <div>
+        <h2 id="p-h">Plan a trip</h2>
+        <p style="color:var(--ink-2); font-size:13.5px; margin-top:6px">Test a stay before you book it. Checked against every single day of the trip, not just the last one.</p>
+      </div>
+    </div>
+    <form class="plan-form" id="planForm">
+      <div class="field">
+        <label class="lbl" for="pEntry">Arrive</label>
+        <input type="date" id="pEntry" required>
+      </div>
+      <div class="field">
+        <label class="lbl" for="pExit">Leave</label>
+        <input type="date" id="pExit" required>
+      </div>
+      <div class="field">
+        <label class="lbl" for="pCountry">Country</label>
+        <input type="text" id="pCountry" placeholder="Greece" autocomplete="off">
+      </div>
+      <div class="ctrls"><button type="submit" class="primary">Check</button></div>
+    </form>
+    <div id="planOut"></div>
+  </section>
+
+  <!-- ================= RULES ================= -->
+  <section class="card rules" aria-labelledby="r-h">
+    <div class="panel-head"><h2 id="r-h">The rules this applies</h2></div>
+    <ol>
+      <li><b>90 days maximum in any rolling 180-day period.</b> Not "90 days per half-year" — the window moves with you, one day at a time.</li>
+      <li><b>The window looks backwards.</b> For any date, count the days you were inside Schengen on that date and the 179 days before it. Anything older has already dropped out.</li>
+      <li><b>Entry day and exit day each count as a full day</b>, however briefly you were in the country. 28 Aug to 14 Sep is 18 days, not 17.</li>
+      <li><b>All Schengen states share one 90-day budget.</b> Greece, Spain, Italy, Croatia, Switzerland, Norway and the rest all draw on the same allowance. Ireland and Cyprus sit outside it.</li>
+      <li><b>A trip is legal only if the limit holds on every day of it.</b> Passing the test on your departure date is not enough — the figures below use the worst day of the trip.</li>
+      <li><b>Days on a national long-stay (D) visa or a residence permit do not count</b> toward the 90. Only leave those out of the trips list.</li>
+    </ol>
+    <p class="cite">Regulation (EU) 2016/399 — Schengen Borders Code, Article 6(1)(b)</p>
+  </section>
+
+  <footer class="foot">
+    <p class="disclaimer">Your data lives in this browser only — nothing is uploaded. Export a copy before clearing site data or switching devices. This is a planning aid, not legal advice; border officers count from your passport stamps.</p>
+    <div class="ctrls">
+      <button type="button" id="btnExport">Export</button>
+      <button type="button" id="btnImport">Import</button>
+      <button type="button" id="btnReset" class="danger">Clear all</button>
+      <input type="file" id="fileIn" accept="application/json,.json" hidden>
+    </div>
+  </footer>
+
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   Dates as integer day numbers — no timezone drift, ever
+   ============================================================ */
+const DAY = 86400000;
+const toN   = iso => Math.floor(Date.UTC(+iso.slice(0,4), +iso.slice(5,7)-1, +iso.slice(8,10)) / DAY);
+const toISO = n   => new Date(n * DAY).toISOString().slice(0,10);
+const parts = n   => { const d = new Date(n * DAY); return {y:d.getUTCFullYear(), m:d.getUTCMonth(), d:d.getUTCDate()}; };
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const fmt  = n => { const p = parts(n); return p.d + " " + MONTHS[p.m] + " " + p.y; };
+const fmtS = n => { const p = parts(n); return p.d + " " + MONTHS[p.m]; };
+function todayN(){ const d = new Date(); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / DAY); }
+
+const WINDOW = 180, LIMIT = 90, KEY = "schengen-90-180-v1";
+
+/* ============================================================
+   Rolling-window maths
+   ============================================================ */
+// Merge overlapping/touching ranges so shared days are never double-counted.
+function mergeAll(ivs){
+  const s = ivs.slice().sort((a,b) => a[0]-b[0]);
+  const out = [];
+  for (const iv of s){
+    const last = out[out.length-1];
+    if (last && iv[0] <= last[1] + 1) last[1] = Math.max(last[1], iv[1]);
+    else out.push([iv[0], iv[1]]);
+  }
+  return out;
+}
+// Do any two ranges genuinely share a day?
+function findOverlaps(list){
+  const s = list.slice().sort((a,b) => toN(a.entry) - toN(b.entry));
+  const hits = [];
+  for (let i=1; i<s.length; i++){
+    if (toN(s[i].entry) <= toN(s[i-1].exit)) hits.push([s[i-1], s[i]]);
+  }
+  return hits;
+}
+// Days present in the 180-day window that ENDS on endN (endN itself included).
+function countAt(merged, endN){
+  const startN = endN - (WINDOW - 1);
+  let c = 0;
+  for (const [a,b] of merged){
+    const lo = Math.max(a, startN), hi = Math.min(b, endN);
+    if (hi >= lo) c += hi - lo + 1;
+  }
+  return c;
+}
+// The peak only ever lands on a day you were present, so scan just those.
+function peak(merged){
+  let max = 0, at = null;
+  for (const [a,b] of merged){
+    for (let n = a; n <= b; n++){
+      const c = countAt(merged, n);
+      if (c > max){ max = c; at = n; }
+    }
+  }
+  return {max, at};
+}
+function tripsToIv(list){
+  return list.map(t => [toN(t.entry), toN(t.exit)]).filter(iv => iv[1] >= iv[0]);
+}
+// Longest legal stay starting on entryN, given everything already booked.
+function maxLegalExit(baseIv, entryN, cap){
+  cap = cap || 400;
+  let best = null;
+  for (let e = entryN; e < entryN + cap; e++){
+    if (peak(mergeAll(baseIv.concat([[entryN, e]]))).max > LIMIT) break;
+    best = e;
+  }
+  return best;
+}
+// Earliest date a stay of `len` days fits legally, searching forward from fromN.
+function earliestStart(baseIv, fromN, len, horizon){
+  horizon = horizon || 400;
+  for (let s = fromN; s < fromN + horizon; s++){
+    if (peak(mergeAll(baseIv.concat([[s, s + len - 1]]))).max <= LIMIT) return s;
+  }
+  return null;
+}
+
+/* ============================================================
+   Storage
+   ============================================================ */
+const SEED = [
+  {id:"t1", country:"Greece", entry:"2026-05-23", exit:"2026-06-29"},
+  {id:"t2", country:"Greece", entry:"2026-08-28", exit:"2026-09-14"}
+];
+let trips = [];
+function load(){
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw){
+      const p = JSON.parse(raw);
+      if (Array.isArray(p)) return p.filter(t => t && t.entry && t.exit);
+    }
+  } catch(e){ /* corrupt or blocked storage — fall through to the seed */ }
+  return SEED.slice();
+}
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify(trips)); }
+  catch(e){ /* private mode: the session still works, it just won't persist */ }
+}
+const newId = () => "t" + Math.random().toString(36).slice(2,9);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const sortTrips = () => trips.sort((a,b) => toN(a.entry) - toN(b.entry));
+
+/* ============================================================
+   Elements
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const el = {
+  mrz:$("mrz"), overlapNotice:$("overlapNotice"),
+  verdictDateLabel:$("verdictDateLabel"), gaugeNum:$("gaugeNum"), bar:$("bar"),
+  fRemain:$("fRemain"), fWindow:$("fWindow"), fFromToday:$("fFromToday"),
+  fRegain:$("fRegain"), fReset:$("fReset"), fWorst:$("fWorst"),
+  stamp:$("stamp"), stampMain:$("stampMain"), stampSub:$("stampSub"),
+  winEnd:$("winEnd"), btnToday:$("btnToday"), btnWorst:$("btnWorst"),
+  strip:$("strip"), months:$("months"), readout:$("readout"),
+  chart:$("chart"), chartTip:$("chartTip"), chartSummary:$("chartSummary"),
+  tripForm:$("tripForm"), fCountry:$("fCountry"), fEntry:$("fEntry"), fExit:$("fExit"),
+  btnSave:$("btnSave"), btnCancelEdit:$("btnCancelEdit"), tripBody:$("tripBody"), tripTotals:$("tripTotals"),
+  planForm:$("planForm"), pEntry:$("pEntry"), pExit:$("pExit"), pCountry:$("pCountry"), planOut:$("planOut"),
+  btnExport:$("btnExport"), btnImport:$("btnImport"), btnReset:$("btnReset"), fileIn:$("fileIn")
+};
+
+let winEndN = todayN();
+let editingId = null;
+let lastPlan = null;
+
+/* ============================================================
+   Render
+   ============================================================ */
+function render(){
+  sortTrips();
+  const iv = tripsToIv(trips);
+  const merged = mergeAll(iv);
+  const today = todayN();
+
+  el.mrz.textContent = "TODAY " + toISO(today).replace(/-/g,"") + " · " + trips.length + " TRIP" + (trips.length === 1 ? "" : "S");
+
+  renderOverlaps();
+  renderVerdict(merged, today);
+  renderStrip(merged, today);
+  renderChart(merged, today);
+  renderTrips(merged, today);
+}
+
+function renderOverlaps(){
+  const hits = findOverlaps(trips.filter(t => toN(t.exit) >= toN(t.entry)));
+  if (!hits.length){ el.overlapNotice.innerHTML = ""; return; }
+  const lines = hits.map(([a,b]) =>
+    esc(a.country || "Trip") + " (" + fmtS(toN(a.entry)) + "–" + fmtS(toN(a.exit)) + ") and " +
+    esc(b.country || "Trip") + " (" + fmtS(toN(b.entry)) + "–" + fmtS(toN(b.exit)) + ")"
+  ).join("; ");
+  el.overlapNotice.innerHTML =
+    '<div class="notice"><b>Overlapping trips</b>' + lines +
+    ' share days. Shared days are counted once, so the totals below are correct — but check the dates in case one was entered twice.</div>';
+}
+
+function renderVerdict(merged, today){
+  const count = countAt(merged, winEndN);
+  const remain = LIMIT - count;
+  const wStart = winEndN - (WINDOW - 1);
+
+  el.verdictDateLabel.textContent = fmt(winEndN);
+  el.gaugeNum.textContent = count;
+  el.gaugeNum.style.color = count > LIMIT ? "var(--crit)" : (remain <= 10 ? "var(--warn)" : "var(--ink)");
+
+  // bar: used up to 90, plus a red overflow section if it goes past
+  const over = Math.max(0, count - LIMIT);
+  const used = Math.min(count, LIMIT);
+  const total = Math.max(LIMIT, count);
+  el.bar.innerHTML =
+    '<div class="bar-used" style="width:' + (used / total * 100) + '%"></div>' +
+    (over ? '<div class="bar-over" style="width:' + (over / total * 100) + '%"></div>' : "");
+
+  el.fRemain.innerHTML = count > LIMIT
+    ? '<span style="color:var(--crit)">' + over + ' over the limit</span>'
+    : remain + ' <span class="muted">of 90</span>';
+  el.fWindow.textContent = fmtS(wStart) + " – " + fmt(winEndN);
+
+  // Longest stay you could start today
+  const mx = maxLegalExit(tripsToIv(trips), today);
+  el.fFromToday.innerHTML = mx === null
+    ? '<span style="color:var(--crit)">0 days</span>'
+    : (mx - today + 1) + ' <span class="muted">days, to ' + fmtS(mx) + '</span>';
+
+  // When the oldest block in the window expires
+  const inWin = merged.map(([a,b]) => [Math.max(a, wStart), Math.min(b, winEndN)]).filter(([a,b]) => b >= a);
+  if (inWin.length){
+    const [a,b] = inWin[0];
+    el.fRegain.innerHTML = (b - a + 1) + ' <span class="muted">by ' + fmtS(b + WINDOW) + '</span>';
+  } else {
+    el.fRegain.innerHTML = '<span class="muted">nothing pending</span>';
+  }
+
+  // Next date a full fresh 90 fits
+  const reset = earliestStart(tripsToIv(trips), today, LIMIT, 400);
+  el.fReset.innerHTML = reset === null
+    ? '<span class="muted">beyond 400 days</span>'
+    : (reset <= today ? '<span style="color:var(--ok)">available now</span>' : fmt(reset));
+
+  const pk = peak(merged);
+  el.fWorst.innerHTML = pk.at === null
+    ? '<span class="muted">no trips yet</span>'
+    : pk.max + ' <span class="muted">on ' + fmtS(pk.at) + '</span>';
+
+  // The stamp reports on the whole plan, not just the selected date
+  let state, main, sub;
+  if (pk.max > LIMIT){
+    state = "over"; main = "OVER BY " + (pk.max - LIMIT) + " DAY" + (pk.max - LIMIT === 1 ? "" : "S");
+    sub = "peaks " + pk.max + "/90 on " + fmtS(pk.at);
+  } else if (pk.max >= LIMIT - 7){
+    state = "tight"; main = "WITHIN LIMITS";
+    sub = "only " + (LIMIT - pk.max) + " day" + (LIMIT - pk.max === 1 ? "" : "s") + " spare";
+  } else {
+    state = "ok"; main = "WITHIN LIMITS";
+    sub = trips.length ? "peaks " + pk.max + "/90" : "no trips recorded";
+  }
+  el.stamp.dataset.state = state;
+  el.stampMain.textContent = main;
+  el.stampSub.textContent = sub;
+}
+
+function renderStrip(merged, today){
+  const wStart = winEndN - (WINDOW - 1);
+  const inSet = n => merged.some(([a,b]) => n >= a && n <= b);
+
+  let cells = "", monthCells = "";
+  let runStart = 0, runMonth = parts(wStart).m, runYear = parts(wStart).y;
+
+  for (let i = 0; i < WINDOW; i++){
+    const n = wStart + i;
+    const p = parts(n);
+    cells += '<div class="cell" data-n="' + n + '"' +
+      (inSet(n) ? ' data-in="1"' : "") +
+      (n > today ? ' data-future="1"' : "") +
+      (n === today ? ' data-today="1"' : "") + '></div>';
+
+    const isLast = i === WINDOW - 1;
+    if (p.m !== runMonth || isLast){
+      const span = (isLast && p.m === runMonth) ? (i - runStart + 1) : (i - runStart);
+      if (span > 0){
+        monthCells += '<div class="month" style="grid-column:span ' + span + '">' +
+          (span >= 4 ? MONTHS[runMonth] + (runMonth === 0 ? " " + String(runYear).slice(2) : "") : "") + '</div>';
+      }
+      if (!(isLast && p.m === runMonth)){
+        runStart = i; runMonth = p.m; runYear = p.y;
+        if (isLast) monthCells += '<div class="month" style="grid-column:span 1"></div>';
+      }
+    }
+  }
+  el.strip.innerHTML = cells;
+  el.months.innerHTML = monthCells;
+
+  const count = countAt(merged, winEndN);
+  el.strip.setAttribute("aria-label",
+    "Window " + fmt(wStart) + " to " + fmt(winEndN) + ": " + count + " days used, " + (LIMIT - count) + " remaining.");
+  setReadout(null, merged, today);
+}
+
+function setReadout(n, merged, today){
+  if (n === null){
+    const c = countAt(merged, winEndN);
+    el.readout.innerHTML = 'Window ends <b>' + fmt(winEndN) + '</b> · <b>' + c + '</b> days used · <b>' +
+      (c > LIMIT ? (c - LIMIT) + ' over' : (LIMIT - c) + ' remaining') + '</b> — hover the strip for any day.';
+    return;
+  }
+  const inside = merged.some(([a,b]) => n >= a && n <= b);
+  const trip = trips.find(t => n >= toN(t.entry) && n <= toN(t.exit));
+  const c = countAt(merged, n);
+  const where = inside
+    ? 'in <b>' + esc(trip && trip.country ? trip.country : "Schengen") + '</b> (day ' + (n - toN(trip.entry) + 1) + ' of that trip)'
+    : 'outside Schengen';
+  el.readout.innerHTML = '<b>' + fmt(n) + '</b> ' + (n > today ? "(planned) " : "") + '· ' + where +
+    ' · <b>' + c + '</b> days used in the window ending that day · <b>' +
+    (c > LIMIT ? (c - LIMIT) + ' over' : (LIMIT - c) + ' left') + '</b>';
+}
+
+function renderTrips(merged, today){
+  if (!trips.length){
+    el.tripBody.innerHTML = '<tr><td colspan="6" class="empty">No trips yet. Add your first entry and exit dates above.</td></tr>';
+    el.tripTotals.textContent = "";
+    return;
+  }
+  let rows = "", total = 0;
+  for (const t of trips){
+    const a = toN(t.entry), b = toN(t.exit);
+    const days = b >= a ? b - a + 1 : 0;
+    total += days;
+    let chip = "";
+    if (a > today) chip = '<span class="chip future">Upcoming</span>';
+    else if (b >= today) chip = '<span class="chip now">In progress</span>';
+    else chip = '<span class="chip">Past</span>';
+    const bad = b < a ? ' style="color:var(--crit)"' : "";
+    rows += '<tr>' +
+      '<td>' + esc(t.country || "—") + '</td>' +
+      '<td class="n">' + fmt(a) + '</td>' +
+      '<td class="n"' + bad + '>' + fmt(b) + (b < a ? " (before entry)" : "") + '</td>' +
+      '<td class="n">' + days + '</td>' +
+      '<td>' + chip + '</td>' +
+      '<td class="act">' +
+        '<button type="button" data-edit="' + t.id + '">Edit</button> ' +
+        '<button type="button" class="danger" data-del="' + t.id + '">Delete</button>' +
+      '</td></tr>';
+  }
+  el.tripBody.innerHTML = rows;
+  el.tripTotals.textContent = total + " days recorded in total";
+}
+
+/* ============================================================
+   Chart — days used per day, against the 90 line
+   ============================================================ */
+let chartPts = [], chartGeom = null;
+
+function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+function renderChart(merged, today){
+  const lastEnd = merged.length ? merged[merged.length-1][1] : today;
+  const from = today - 60;
+  const to   = Math.max(today + 240, lastEnd + 45);
+
+  chartPts = [];
+  for (let n = from; n <= to; n++) chartPts.push({n, c: countAt(merged, n)});
+
+  const hi = chartPts.reduce((m,p) => Math.max(m, p.c), 0);
+  const lo = chartPts.reduce((m,p) => Math.min(m, p.c), Infinity);
+  el.chartSummary.textContent =
+    "From " + fmt(from) + " to " + fmt(to) + ", your rolling total ranges between " + (isFinite(lo) ? lo : 0) +
+    " and " + hi + " days. The dashed line is the 90-day ceiling.";
+
+  drawChart();
+}
+
+function drawChart(){
+  const cv = el.chart;
+  if (!cv || !chartPts.length) return;
+  const box = cv.parentElement.getBoundingClientRect();
+  const w = Math.max(320, box.width), h = box.height;
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  const ctx = cv.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+
+  const ink = cssVar("--ink"), ink3 = cssVar("--ink-3"), rule = cssVar("--rule");
+  const accent = cssVar("--accent"), crit = cssVar("--crit"), card = cssVar("--card");
+
+  const pad = {t:14, r:16, b:26, l:34};
+  const pw = w - pad.l - pad.r, ph = h - pad.t - pad.b;
+  const n0 = chartPts[0].n, n1 = chartPts[chartPts.length-1].n;
+  const yMax = Math.max(100, Math.ceil((chartPts.reduce((m,p) => Math.max(m,p.c), 0) + 8) / 10) * 10);
+  const X = n => pad.l + (n - n0) / (n1 - n0) * pw;
+  const Y = c => pad.t + ph - (c / yMax) * ph;
+  chartGeom = {X, Y, pad, pw, ph, n0, n1, w, h};
+
+  // recessive grid
+  ctx.strokeStyle = rule; ctx.lineWidth = 1;
+  ctx.font = '10px ' + "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+  ctx.fillStyle = ink3; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  for (const v of [0, 30, 60, 90]){
+    if (v > yMax) continue;
+    const y = Math.round(Y(v)) + 0.5;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + pw, y); ctx.stroke();
+    ctx.fillText(String(v), pad.l - 7, Y(v));
+  }
+
+  // month ticks
+  ctx.textAlign = "center"; ctx.textBaseline = "top";
+  for (let n = n0; n <= n1; n++){
+    if (parts(n).d !== 1) continue;
+    const x = X(n);
+    ctx.strokeStyle = rule;
+    ctx.beginPath(); ctx.moveTo(x, pad.t + ph); ctx.lineTo(x, pad.t + ph + 4); ctx.stroke();
+    const p = parts(n);
+    if (pw / ((n1 - n0) / 30) > 34) ctx.fillText(MONTHS[p.m], x, pad.t + ph + 8);
+  }
+
+  // area fill
+  ctx.beginPath();
+  ctx.moveTo(X(chartPts[0].n), Y(0));
+  for (const p of chartPts) ctx.lineTo(X(p.n), Y(p.c));
+  ctx.lineTo(X(chartPts[chartPts.length-1].n), Y(0));
+  ctx.closePath();
+  ctx.fillStyle = accent; ctx.globalAlpha = 0.13; ctx.fill(); ctx.globalAlpha = 1;
+
+  // the 90 ceiling
+  ctx.save();
+  ctx.setLineDash([5,4]); ctx.strokeStyle = crit; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(pad.l, Y(LIMIT)); ctx.lineTo(pad.l + pw, Y(LIMIT)); ctx.stroke();
+  ctx.restore();
+
+  // the series
+  ctx.beginPath();
+  chartPts.forEach((p,i) => i ? ctx.lineTo(X(p.n), Y(p.c)) : ctx.moveTo(X(p.n), Y(p.c)));
+  ctx.strokeStyle = accent; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.stroke();
+
+  // today marker
+  const today = todayN();
+  if (today >= n0 && today <= n1){
+    const x = X(today), pt = chartPts[today - n0];
+    ctx.save();
+    ctx.setLineDash([2,3]); ctx.strokeStyle = ink3; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t + ph); ctx.stroke();
+    ctx.restore();
+    ctx.beginPath(); ctx.arc(x, Y(pt.c), 4.5, 0, Math.PI*2);
+    ctx.fillStyle = accent; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = card; ctx.stroke();
+    ctx.fillStyle = ink3; ctx.textAlign = x > pad.l + pw - 44 ? "right" : "left"; ctx.textBaseline = "top";
+    ctx.fillText("TODAY", x + (x > pad.l + pw - 44 ? -6 : 6), pad.t + 1);
+  }
+}
+
+el.chart.addEventListener("mousemove", ev => {
+  if (!chartGeom || !chartPts.length) return;
+  const r = el.chart.getBoundingClientRect();
+  const x = ev.clientX - r.left;
+  const g = chartGeom;
+  const frac = (x - g.pad.l) / g.pw;
+  const idx = Math.max(0, Math.min(chartPts.length-1, Math.round(frac * (g.n1 - g.n0))));
+  const p = chartPts[idx];
+  const left = Math.min(Math.max(g.X(p.n) + 12, 4), r.width - 168);
+  el.chartTip.style.left = left + "px";
+  el.chartTip.style.top = Math.max(4, g.Y(p.c) - 46) + "px";
+  el.chartTip.style.opacity = "1";
+  el.chartTip.innerHTML = '<div class="d">' + fmt(p.n) + '</div><div class="v">' + p.c + ' used · ' +
+    (p.c > LIMIT ? (p.c - LIMIT) + ' over' : (LIMIT - p.c) + ' left') + '</div>';
+});
+el.chart.addEventListener("mouseleave", () => { el.chartTip.style.opacity = "0"; });
+
+/* ============================================================
+   Interaction
+   ============================================================ */
+el.strip.addEventListener("mouseover", ev => {
+  const c = ev.target.closest(".cell"); if (!c) return;
+  setReadout(+c.dataset.n, mergeAll(tripsToIv(trips)), todayN());
+});
+el.strip.addEventListener("mouseleave", () => setReadout(null, mergeAll(tripsToIv(trips)), todayN()));
+
+el.winEnd.addEventListener("change", () => {
+  if (!el.winEnd.value) return;
+  winEndN = toN(el.winEnd.value);
+  render();
+});
+el.btnToday.addEventListener("click", () => { winEndN = todayN(); el.winEnd.value = toISO(winEndN); render(); });
+el.btnWorst.addEventListener("click", () => {
+  const pk = peak(mergeAll(tripsToIv(trips)));
+  if (pk.at === null) return;
+  winEndN = pk.at; el.winEnd.value = toISO(winEndN); render();
+});
+
+/* ---- trips: add / edit ---- */
+el.tripForm.addEventListener("submit", ev => {
+  ev.preventDefault();
+  const entry = el.fEntry.value, exit = el.fExit.value;
+  if (!entry || !exit) return;
+  if (toN(exit) < toN(entry)){ alert("The exit date is before the entry date. Swap them and try again."); return; }
+  const country = el.fCountry.value.trim() || "Schengen";
+  if (editingId){
+    const t = trips.find(x => x.id === editingId);
+    if (t){ t.country = country; t.entry = entry; t.exit = exit; }
+    exitEditMode();
+  } else {
+    trips.push({id:newId(), country, entry, exit});
+  }
+  save(); el.tripForm.reset(); render();
+});
+el.btnCancelEdit.addEventListener("click", () => { exitEditMode(); el.tripForm.reset(); });
+
+function enterEditMode(t){
+  editingId = t.id;
+  el.fCountry.value = t.country || "";
+  el.fEntry.value = t.entry; el.fExit.value = t.exit;
+  el.btnSave.textContent = "Save changes";
+  el.btnCancelEdit.hidden = false;
+  el.fCountry.focus();
+}
+function exitEditMode(){
+  editingId = null;
+  el.btnSave.textContent = "Add trip";
+  el.btnCancelEdit.hidden = true;
+}
+
+el.tripBody.addEventListener("click", ev => {
+  const del = ev.target.closest("[data-del]"), edit = ev.target.closest("[data-edit]");
+  if (del){
+    const t = trips.find(x => x.id === del.dataset.del);
+    if (t && confirm("Delete " + (t.country || "this trip") + ", " + fmt(toN(t.entry)) + " to " + fmt(toN(t.exit)) + "?")){
+      trips = trips.filter(x => x.id !== del.dataset.del);
+      if (editingId === del.dataset.del) { exitEditMode(); el.tripForm.reset(); }
+      save(); render();
+    }
+  } else if (edit){
+    const t = trips.find(x => x.id === edit.dataset.edit);
+    if (t) enterEditMode(t);
+  }
+});
+
+/* ---- planner ---- */
+el.planForm.addEventListener("submit", ev => {
+  ev.preventDefault();
+  const entry = el.pEntry.value, exit = el.pExit.value;
+  if (!entry || !exit) return;
+  const a = toN(entry), b = toN(exit);
+  if (b < a){ el.planOut.innerHTML = '<div class="result" data-state="over"><div class="result-title">Dates are back to front</div><ul><li>The leaving date is before the arrival date.</li></ul></div>'; return; }
+
+  const country = el.pCountry.value.trim() || "Schengen";
+  const len = b - a + 1;
+  const baseIv = tripsToIv(trips);
+  const withPlan = mergeAll(baseIv.concat([[a,b]]));
+  const pk = peak(withPlan);
+  const overall = countAt(withPlan, b);
+
+  let state, title, items = [];
+  items.push('Requested stay: <b>' + len + ' day' + (len === 1 ? "" : "s") + '</b>, ' + fmt(a) + ' to ' + fmt(b) + ' inclusive.');
+
+  if (pk.max > LIMIT){
+    const over = pk.max - LIMIT;
+    state = "over";
+    title = "Over the limit by " + over + " day" + (over === 1 ? "" : "s");
+    items.push('Worst day is <b>' + fmtS(pk.at) + '</b>, when the rolling total hits <b>' + pk.max + '/90</b>.');
+    const mx = maxLegalExit(baseIv, a);
+    items.push(mx === null
+      ? 'You cannot legally enter on that date at all — you are already at the limit.'
+      : 'Arriving ' + fmtS(a) + ', you could stay until <b>' + fmt(mx) + '</b> — <b>' + (mx - a + 1) + ' day' + (mx - a + 1 === 1 ? "" : "s") + '</b>.');
+    const es = earliestStart(baseIv, a, len, 400);
+    items.push(es === null
+      ? 'No start date in the next 400 days fits the full ' + len + ' days.'
+      : 'For the full <b>' + len + ' days</b>, the earliest legal arrival is <b>' + fmt(es) + '</b>.');
+  } else {
+    const spare = LIMIT - pk.max;
+    state = spare <= 7 ? "tight" : "ok";
+    title = spare <= 7 ? "Legal, but only " + spare + " day" + (spare === 1 ? "" : "s") + " to spare" : "This stay is within the rules";
+    items.push('Peak usage during the trip is <b>' + pk.max + '/90</b> on <b>' + fmtS(pk.at) + '</b> — <b>' + spare + ' day' + (spare === 1 ? "" : "s") + '</b> in hand.');
+    items.push('On your departure date the rolling total will be <b>' + overall + '/90</b>.');
+    const mx = maxLegalExit(baseIv, a);
+    if (mx !== null && mx > b) items.push('You could extend to <b>' + fmt(mx) + '</b> and still be legal — <b>' + (mx - b) + '</b> extra day' + (mx - b === 1 ? "" : "s") + '.');
+  }
+
+  lastPlan = {id:newId(), country, entry, exit};
+  el.planOut.innerHTML =
+    '<div class="result" data-state="' + state + '">' +
+      '<div class="result-title">' + esc(title) + '</div>' +
+      '<ul>' + items.map(i => '<li>' + i + '</li>').join("") + '</ul>' +
+      '<div class="result-actions"><button type="button" id="btnAddPlan">Add this trip to my list</button></div>' +
+    '</div>';
+  const btn = $("btnAddPlan");
+  if (btn) btn.addEventListener("click", () => {
+    trips.push(lastPlan); save(); el.planForm.reset(); el.planOut.innerHTML = ""; render();
+  });
+});
+
+/* ---- data management ---- */
+el.btnExport.addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(trips, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "schengen-trips-" + toISO(todayN()) + ".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+el.btnImport.addEventListener("click", () => el.fileIn.click());
+el.fileIn.addEventListener("change", () => {
+  const f = el.fileIn.files && el.fileIn.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const p = JSON.parse(r.result);
+      if (!Array.isArray(p)) throw new Error("not a list");
+      const clean = p.filter(t => t && typeof t.entry === "string" && typeof t.exit === "string")
+                     .map(t => ({id:t.id || newId(), country:t.country || "Schengen", entry:t.entry, exit:t.exit}));
+      if (!clean.length) throw new Error("no trips");
+      trips = clean; save(); render();
+    } catch(e){
+      alert("That file could not be read as a trip list. Use a file this page exported.");
+    }
+    el.fileIn.value = "";
+  };
+  r.readAsText(f);
+});
+el.btnReset.addEventListener("click", () => {
+  if (!confirm("Delete every trip and start over? Export first if you want a copy.")) return;
+  trips = []; save(); exitEditMode(); el.tripForm.reset(); el.planOut.innerHTML = ""; render();
+});
+
+/* ---- redraw on resize and theme change ---- */
+let rt;
+window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(drawChart, 120); });
+if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawChart);
+new MutationObserver(drawChart).observe(document.documentElement, {attributes:true, attributeFilter:["data-theme","class","style"]});
+
+/* ---- boot ---- */
+trips = load();
+winEndN = todayN();
+el.winEnd.value = toISO(winEndN);
+el.pEntry.value = toISO(todayN());
+render();
+})();
+</script>
+</body>
+</html>
