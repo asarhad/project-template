@@ -18,9 +18,9 @@
   --ok:#2A6B4F;   --ok-soft:#E3EFE9;
   --warn:#9C6407; --warn-soft:#F6EDDC;
   --crit:#AC3324; --crit-soft:#F8E4E1;
-  --cell-empty:#E1DFD9; --cell-future-line:#B9B5C9;
+  --cell-empty:#E1DFD9;
+  --on-accent:#FFFFFF;
   --shadow:0 1px 2px rgba(25,24,33,.05), 0 8px 24px -12px rgba(25,24,33,.18);
-
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -33,7 +33,8 @@
     --ok:#54B389;   --ok-soft:#16302A;
     --warn:#DFA347; --warn-soft:#332714;
     --crit:#E86D5E; --crit-soft:#3A1E1A;
-    --cell-empty:#2C2A37; --cell-future-line:#575370;
+    --cell-empty:#2C2A37;
+    --on-accent:#17141F;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
   }
 }
@@ -45,7 +46,7 @@
   --ok:#2A6B4F;   --ok-soft:#E3EFE9;
   --warn:#9C6407; --warn-soft:#F6EDDC;
   --crit:#AC3324; --crit-soft:#F8E4E1;
-  --cell-empty:#E1DFD9; --cell-future-line:#B9B5C9;
+  --cell-empty:#E1DFD9; --on-accent:#FFFFFF;
   --shadow:0 1px 2px rgba(25,24,33,.05), 0 8px 24px -12px rgba(25,24,33,.18);
 }
 :root[data-theme="dark"]{
@@ -56,7 +57,7 @@
   --ok:#54B389;   --ok-soft:#16302A;
   --warn:#DFA347; --warn-soft:#332714;
   --crit:#E86D5E; --crit-soft:#3A1E1A;
-  --cell-empty:#2C2A37; --cell-future-line:#575370;
+  --cell-empty:#2C2A37; --on-accent:#17141F;
   --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
 }
 
@@ -65,186 +66,119 @@ body{margin:0}
 .sg{
   background:var(--paper); color:var(--ink);
   font-family:var(--sans); font-size:15px; line-height:1.55;
-  -webkit-font-smoothing:antialiased;
-  padding:32px 20px 72px;
+  -webkit-font-smoothing:antialiased; padding:32px 20px 72px;
 }
 .sg-wrap{max-width:1080px; margin:0 auto; display:flex; flex-direction:column; gap:20px}
 
-/* ---------- shared type ---------- */
+/* ---------- type ---------- */
 .sg h1,.sg h2,.sg h3{margin:0; text-wrap:balance}
-.sg h1{
-  font-family:var(--mono); font-size:22px; font-weight:600;
-  letter-spacing:.16em; text-transform:uppercase;
-}
-.sg h2{
-  font-family:var(--mono); font-size:12px; font-weight:600;
-  letter-spacing:.18em; text-transform:uppercase; color:var(--ink-3);
-}
-.sg h3{font-family:var(--sans); font-size:15px; font-weight:650}
-.lbl{
-  font-family:var(--mono); font-size:10.5px; font-weight:600;
-  letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3);
-}
-.num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+.sg h1{font-family:var(--mono); font-size:22px; font-weight:600; letter-spacing:.16em; text-transform:uppercase}
+.sg h2{font-family:var(--mono); font-size:12px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-3)}
+.lbl{font-family:var(--mono); font-size:10.5px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3)}
 .sg p{margin:0}
+.hint{color:var(--ink-2); font-size:13.5px; margin-top:6px; max-width:70ch}
 
 /* ---------- masthead ---------- */
-.masthead{
-  display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between;
-  gap:12px; padding-bottom:16px; border-bottom:1px solid var(--rule);
-}
+.masthead{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:14px; padding-bottom:16px; border-bottom:1px solid var(--rule)}
 .masthead .sub{color:var(--ink-2); font-size:14px; margin-top:6px; max-width:62ch}
-.mrz{
-  font-family:var(--mono); font-size:11px; letter-spacing:.1em;
-  color:var(--ink-3); text-align:right; white-space:nowrap;
+.mast-right{display:flex; flex-direction:column; align-items:flex-end; gap:8px}
+.mrz{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:var(--ink-3); white-space:nowrap}
+.syncchip{
+  display:inline-flex; align-items:center; gap:7px; font-family:var(--mono); font-size:10.5px;
+  font-weight:600; letter-spacing:.11em; text-transform:uppercase; padding:5px 10px;
+  border-radius:20px; border:1px solid var(--rule); background:var(--card); color:var(--ink-3);
+  cursor:pointer;
 }
+.syncchip:hover{border-color:var(--accent); color:var(--accent)}
+.syncchip .dot{width:7px; height:7px; border-radius:50%; background:var(--ink-3); flex:none}
+.syncchip[data-s="ok"]{color:var(--ok); border-color:var(--ok)} .syncchip[data-s="ok"] .dot{background:var(--ok)}
+.syncchip[data-s="err"]{color:var(--crit); border-color:var(--crit)} .syncchip[data-s="err"] .dot{background:var(--crit)}
+.syncchip[data-s="busy"]{color:var(--accent); border-color:var(--accent)} .syncchip[data-s="busy"] .dot{background:var(--accent)}
 
 /* ---------- cards ---------- */
-.card{
-  background:var(--card); border:1px solid var(--rule); border-radius:4px;
-  box-shadow:var(--shadow); padding:20px;
-}
-.panel-head{
-  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
-  gap:12px; margin-bottom:16px;
-}
+.card{background:var(--card); border:1px solid var(--rule); border-radius:4px; box-shadow:var(--shadow); padding:20px}
+.panel-head{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px}
 
 /* ---------- verdict ---------- */
 .verdict{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:28px; align-items:center}
 @media (max-width:760px){.verdict{grid-template-columns:1fr}}
-
 .gauge-head{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
 .gauge-num{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:58px; line-height:.95; font-weight:600; letter-spacing:-.02em}
 .gauge-of{font-family:var(--mono); font-size:15px; color:var(--ink-3); letter-spacing:.06em}
-.bar{
-  margin-top:16px; height:12px; border-radius:2px; background:var(--cell-empty);
-  display:flex; overflow:hidden; border:1px solid var(--rule);
-}
+.bar{margin-top:16px; height:12px; border-radius:2px; background:var(--cell-empty); display:flex; overflow:hidden; border:1px solid var(--rule)}
 .bar-used{background:var(--accent)}
 .bar-over{background:var(--crit)}
-.bar-plan{background:var(--accent); opacity:.42}
 .facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px 22px; margin:20px 0 0}
 .fact dt{margin-bottom:3px}
 .fact dd{margin:0; font-family:var(--mono); font-size:14px; font-variant-numeric:tabular-nums; color:var(--ink)}
 .fact dd .muted{color:var(--ink-3)}
-
-/* the stamp */
-.stamp{
-  transform:rotate(-2.5deg);
-  border:2px solid currentColor; border-radius:3px;
-  padding:12px 20px 10px; text-align:center; min-width:212px;
-  position:relative; color:var(--ok); background:var(--ok-soft);
-}
-.stamp::after{
-  content:""; position:absolute; inset:3px; border:1px solid currentColor;
-  border-radius:2px; opacity:.42; pointer-events:none;
-}
+.stamp{transform:rotate(-2.5deg); border:2px solid currentColor; border-radius:3px; padding:12px 20px 10px; text-align:center; min-width:212px; position:relative; color:var(--ok); background:var(--ok-soft)}
+.stamp::after{content:""; position:absolute; inset:3px; border:1px solid currentColor; border-radius:2px; opacity:.42; pointer-events:none}
 .stamp[data-state="over"]{color:var(--crit); background:var(--crit-soft)}
 .stamp[data-state="tight"]{color:var(--warn); background:var(--warn-soft)}
-.stamp-main{
-  font-family:var(--mono); font-size:16px; font-weight:700;
-  letter-spacing:.13em; text-transform:uppercase; line-height:1.25;
-}
-.stamp-sub{
-  font-family:var(--mono); font-size:10px; letter-spacing:.19em;
-  text-transform:uppercase; margin-top:6px; opacity:.8;
-}
+.stamp-main{font-family:var(--mono); font-size:16px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; line-height:1.25}
+.stamp-sub{font-family:var(--mono); font-size:10px; letter-spacing:.19em; text-transform:uppercase; margin-top:6px; opacity:.8}
 
-/* ---------- window strip ---------- */
-.strip{
-  display:grid; grid-template-columns:repeat(180,1fr); gap:1px;
-  height:56px; align-items:stretch;
-}
+/* ---------- strip ---------- */
+.strip{display:grid; grid-template-columns:repeat(180,1fr); gap:1px; height:56px}
 .cell{background:var(--cell-empty); border-radius:1px; min-width:0}
 .cell[data-in="1"]{background:var(--accent)}
-.cell[data-in="1"][data-future="1"]{background:var(--accent); opacity:.45}
-.cell[data-today="1"]{outline:2px solid var(--ink); outline-offset:1px; z-index:2; position:relative}
-.months{
-  display:grid; grid-template-columns:repeat(180,1fr); gap:1px; margin-top:6px;
-  border-top:1px solid var(--rule-2); padding-top:5px;
-}
-.month{
-  font-family:var(--mono); font-size:10px; letter-spacing:.08em; color:var(--ink-3);
-  text-transform:uppercase; overflow:hidden; white-space:nowrap; min-width:0;
-  border-left:1px solid var(--rule); padding-left:4px;
-}
-.readout{
-  margin-top:14px; font-family:var(--mono); font-size:13px;
-  font-variant-numeric:tabular-nums; color:var(--ink-2); min-height:1.5em;
-}
+.cell[data-in="1"][data-future="1"]{background:var(--accent); opacity:.42}
+.cell[data-today="1"]{outline:2px solid var(--ink); outline-offset:1px; position:relative; z-index:2}
+.months{display:grid; grid-template-columns:repeat(180,1fr); gap:1px; margin-top:6px; border-top:1px solid var(--rule-2); padding-top:5px}
+.month{font-family:var(--mono); font-size:10px; letter-spacing:.08em; color:var(--ink-3); text-transform:uppercase; overflow:hidden; white-space:nowrap; min-width:0; border-left:1px solid var(--rule); padding-left:4px}
+.readout{margin-top:14px; font-family:var(--mono); font-size:13px; font-variant-numeric:tabular-nums; color:var(--ink-2); min-height:1.5em}
 .readout b{color:var(--ink); font-weight:600}
 .keys{display:flex; flex-wrap:wrap; gap:16px; margin-top:12px}
 .key{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--ink-2)}
 .swatch{width:12px; height:12px; border-radius:2px; background:var(--cell-empty); flex:none}
 .swatch.in{background:var(--accent)}
-.swatch.plan{background:var(--accent); opacity:.45}
+.swatch.plan{background:var(--accent); opacity:.42}
 
 /* ---------- controls ---------- */
 .ctrls{display:flex; flex-wrap:wrap; align-items:center; gap:8px}
 .sg button{
-  font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.1em;
-  text-transform:uppercase; color:var(--ink-2); background:var(--card-2);
-  border:1px solid var(--rule); border-radius:3px; padding:7px 11px; cursor:pointer;
-  transition:border-color .12s, color .12s, background .12s;
+  font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-2); background:var(--card-2); border:1px solid var(--rule); border-radius:3px;
+  padding:7px 11px; cursor:pointer; transition:border-color .12s, color .12s, opacity .12s;
 }
 .sg button:hover{border-color:var(--accent); color:var(--accent)}
 .sg button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
-.sg button.primary{background:var(--accent); border-color:var(--accent); color:#fff}
-:root[data-theme="dark"] .sg button.primary,
-.sg button.primary{color:#fff}
-@media (prefers-color-scheme: dark){.sg button.primary{color:#17141F}}
-:root[data-theme="dark"] .sg button.primary{color:#17141F}
-:root[data-theme="light"] .sg button.primary{color:#fff}
-.sg button.primary:hover{opacity:.88; color:inherit}
+.sg button.primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.sg button.primary:hover{opacity:.85; color:var(--on-accent)}
 .sg button.danger:hover{border-color:var(--crit); color:var(--crit)}
-.sg input[type="date"], .sg input[type="text"], .sg input[type="number"]{
-  font-family:var(--mono); font-size:13px; color:var(--ink);
-  background:var(--card-2); border:1px solid var(--rule); border-radius:3px;
-  padding:7px 9px; min-width:0; width:100%;
+.sg button[disabled]{opacity:.45; cursor:not-allowed}
+.sg input[type="date"], .sg input[type="text"], .sg input[type="password"]{
+  font-family:var(--mono); font-size:13px; color:var(--ink); background:var(--card-2);
+  border:1px solid var(--rule); border-radius:3px; padding:7px 9px; min-width:0; width:100%;
 }
 .sg input:focus-visible{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
 .field{display:flex; flex-direction:column; gap:5px; min-width:0}
+.toggle{display:inline-flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-2); cursor:pointer; user-select:none}
+.toggle input{accent-color:var(--accent); width:15px; height:15px; cursor:pointer}
 
 /* ---------- chart ---------- */
 .chart-box{position:relative; width:100%; height:220px}
 .chart-box canvas{width:100%; height:100%; display:block; cursor:crosshair}
-.chart-tip{
-  position:absolute; pointer-events:none; opacity:0; transition:opacity .1s;
-  background:var(--card); border:1px solid var(--rule); border-radius:3px;
-  box-shadow:var(--shadow); padding:8px 10px; font-family:var(--mono);
-  font-size:12px; font-variant-numeric:tabular-nums; white-space:nowrap; z-index:5;
-}
+.chart-tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .1s; background:var(--card); border:1px solid var(--rule); border-radius:3px; box-shadow:var(--shadow); padding:8px 10px; font-family:var(--mono); font-size:12px; font-variant-numeric:tabular-nums; white-space:nowrap; z-index:5}
 .chart-tip .d{color:var(--ink-3); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:3px}
 .chart-tip .v{color:var(--ink); font-weight:600}
 
-/* ---------- trips table ---------- */
+/* ---------- trips ---------- */
 .tbl-scroll{overflow-x:auto; margin:0 -4px; padding:0 4px}
-table.trips{width:100%; border-collapse:collapse; font-size:14px; min-width:620px}
-table.trips th{
-  text-align:left; font-family:var(--mono); font-size:10px; font-weight:600;
-  letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3);
-  padding:0 12px 8px 0; border-bottom:1px solid var(--rule);
-}
+table.trips{width:100%; border-collapse:collapse; font-size:14px; min-width:640px}
+table.trips th{text-align:left; font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); padding:0 12px 8px 0; border-bottom:1px solid var(--rule)}
 table.trips td{padding:11px 12px 11px 0; border-bottom:1px solid var(--rule-2); vertical-align:middle}
 table.trips tr:last-child td{border-bottom:none}
 table.trips td.n{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
 table.trips td.act{text-align:right; white-space:nowrap}
 table.trips td.act button{padding:5px 8px; font-size:10px}
-.chip{
-  display:inline-block; font-family:var(--mono); font-size:9.5px; font-weight:600;
-  letter-spacing:.12em; text-transform:uppercase; padding:3px 7px; border-radius:2px;
-  background:var(--card-2); color:var(--ink-3); border:1px solid var(--rule);
-}
-.chip.future{background:var(--accent-soft); color:var(--accent); border-color:transparent}
+tr.tentative td{background:linear-gradient(var(--accent-soft),var(--accent-soft))}
+.chip{display:inline-block; font-family:var(--mono); font-size:9.5px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; padding:3px 7px; border-radius:2px; background:var(--card-2); color:var(--ink-3); border:1px solid var(--rule)}
+.chip.tentative{background:var(--accent-soft); color:var(--accent); border-color:transparent}
 .chip.now{background:var(--ok-soft); color:var(--ok); border-color:transparent}
 .empty{color:var(--ink-3); font-size:14px; padding:18px 0}
-
-/* add / edit form */
-.trip-form{
-  display:grid; grid-template-columns:1.4fr 1fr 1fr auto; gap:12px; align-items:end;
-  padding:16px; background:var(--card-2); border:1px solid var(--rule-2);
-  border-radius:3px; margin-bottom:18px;
-}
+.trip-form{display:grid; grid-template-columns:1.4fr 1fr 1fr auto; gap:12px; align-items:end; padding:16px; background:var(--card-2); border:1px solid var(--rule-2); border-radius:3px; margin-bottom:18px}
 @media (max-width:700px){.trip-form{grid-template-columns:1fr 1fr}.trip-form .span2{grid-column:span 2}}
 
 /* ---------- planner ---------- */
@@ -264,21 +198,29 @@ table.trips td.act button{padding:5px 8px; font-size:10px}
 .result-actions{margin-top:14px}
 
 /* ---------- notices ---------- */
-.notice{
-  border-left:3px solid var(--warn); background:var(--warn-soft); color:var(--ink);
-  padding:11px 14px; border-radius:0 3px 3px 0; font-size:13.5px;
-}
+.notice{border-left:3px solid var(--warn); background:var(--warn-soft); color:var(--ink); padding:11px 14px; border-radius:0 3px 3px 0; font-size:13.5px}
 .notice b{font-family:var(--mono); letter-spacing:.06em; text-transform:uppercase; font-size:11px; color:var(--warn); display:block; margin-bottom:3px}
+.notice.bad{border-left-color:var(--crit); background:var(--crit-soft)}
+.notice.bad b{color:var(--crit)}
 
-/* ---------- rules ---------- */
+/* ---------- sync ---------- */
+.sync-form{display:grid; grid-template-columns:1.3fr 1fr; gap:12px; margin-bottom:14px}
+@media (max-width:700px){.sync-form{grid-template-columns:1fr}}
+.sync-state{font-family:var(--mono); font-size:12.5px; font-variant-numeric:tabular-nums; color:var(--ink-2); padding:10px 0}
+.sync-state b{color:var(--ink)}
+.steps{margin:14px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:8px; max-width:76ch}
+.steps li{font-size:13.5px; color:var(--ink-2)}
+.steps code{font-family:var(--mono); font-size:12.5px; background:var(--card-2); border:1px solid var(--rule-2); border-radius:2px; padding:1px 5px}
+details.fold summary{cursor:pointer; font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); padding:6px 0}
+details.fold summary:hover{color:var(--accent)}
+
+/* ---------- rules / footer ---------- */
 .rules ol{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:9px; max-width:74ch}
 .rules li{color:var(--ink-2); font-size:14.5px}
 .rules li b{color:var(--ink)}
 .rules .cite{margin-top:16px; font-family:var(--mono); font-size:11px; letter-spacing:.06em; color:var(--ink-3)}
-
-/* ---------- footer ---------- */
 .foot{display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; padding-top:6px}
-.disclaimer{font-size:12.5px; color:var(--ink-3); max-width:60ch}
+.disclaimer{font-size:12.5px; color:var(--ink-3); max-width:58ch}
 .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
 @media (prefers-reduced-motion: reduce){.sg *{transition:none !important}}
 </style>
@@ -289,17 +231,20 @@ table.trips td.act button{padding:5px 8px; font-size:10px}
   <header class="masthead">
     <div>
       <h1>Schengen 90 / 180</h1>
-      <p class="sub">A rolling-window day counter for short stays in the Schengen area. Your trips are saved in this browser.</p>
+      <p class="sub">A rolling-window day counter for short stays in the Schengen area. The count moves with the calendar — every day that passes frees up the day that dropped out.</p>
     </div>
-    <div class="mrz" id="mrz"></div>
+    <div class="mast-right">
+      <button type="button" class="syncchip" id="syncChip" data-s="off"><span class="dot"></span><span id="syncChipTxt">Local only</span></button>
+      <div class="mrz" id="mrz"></div>
+    </div>
   </header>
 
-  <div id="overlapNotice"></div>
+  <div id="notices"></div>
 
   <!-- ================= VERDICT ================= -->
   <section class="card verdict" aria-labelledby="v-h">
     <div>
-      <h2 id="v-h">Status on <span id="verdictDateLabel" class="num"></span></h2>
+      <h2 id="v-h">Status on <span id="verdictDateLabel"></span></h2>
       <div class="gauge-head" style="margin-top:10px">
         <span class="gauge-num" id="gaugeNum">0</span>
         <span class="gauge-of">days used &nbsp;/&nbsp; 90 allowed</span>
@@ -313,6 +258,10 @@ table.trips td.act button{padding:5px 8px; font-size:10px}
         <div class="fact"><dt class="lbl">Next clean 90-day slot</dt><dd id="fReset">—</dd></div>
         <div class="fact"><dt class="lbl">Worst day on record</dt><dd id="fWorst">—</dd></div>
       </dl>
+      <label class="toggle" style="margin-top:18px">
+        <input type="checkbox" id="inclTentative" checked>
+        Count tentative future trips
+      </label>
     </div>
     <div class="stamp" id="stamp" data-state="ok">
       <div class="stamp-main" id="stampMain">WITHIN LIMITS</div>
@@ -320,12 +269,12 @@ table.trips td.act button{padding:5px 8px; font-size:10px}
     </div>
   </section>
 
-  <!-- ================= WINDOW STRIP ================= -->
+  <!-- ================= STRIP ================= -->
   <section class="card" aria-labelledby="w-h">
     <div class="panel-head">
       <div>
         <h2 id="w-h">The 180-day window</h2>
-        <p style="color:var(--ink-2); font-size:13.5px; margin-top:6px">One cell per day. The window ends on the date below and reaches back 179 days — everything older has dropped out.</p>
+        <p class="hint">One cell per day. The window ends on the date below and reaches back 179 days — everything older has already dropped out.</p>
       </div>
       <div class="ctrls">
         <label class="sr" for="winEnd">Window end date</label>
@@ -338,8 +287,8 @@ table.trips td.act button{padding:5px 8px; font-size:10px}
     <div class="months" id="months"></div>
     <div class="readout" id="readout"></div>
     <div class="keys">
-      <span class="key"><span class="swatch in"></span> Days recorded</span>
-      <span class="key"><span class="swatch plan"></span> Days still in the future</span>
+      <span class="key"><span class="swatch in"></span> Days already taken</span>
+      <span class="key"><span class="swatch plan"></span> Tentative future days</span>
       <span class="key"><span class="swatch"></span> Outside Schengen</span>
     </div>
   </section>
@@ -347,48 +296,32 @@ table.trips td.act button{padding:5px 8px; font-size:10px}
   <!-- ================= CHART ================= -->
   <section class="card" aria-labelledby="c-h">
     <div class="panel-head">
-      <div>
-        <h2 id="c-h">Days used, day by day</h2>
-        <p style="color:var(--ink-2); font-size:13.5px; margin-top:6px" id="chartSummary"></p>
-      </div>
+      <div><h2 id="c-h">Days used, day by day</h2><p class="hint" id="chartSummary"></p></div>
     </div>
-    <div class="chart-box">
-      <canvas id="chart"></canvas>
-      <div class="chart-tip" id="chartTip"></div>
-    </div>
+    <div class="chart-box"><canvas id="chart"></canvas><div class="chart-tip" id="chartTip"></div></div>
   </section>
 
   <!-- ================= TRIPS ================= -->
   <section class="card" aria-labelledby="t-h">
     <div class="panel-head">
       <h2 id="t-h">Your trips</h2>
-      <div class="ctrls"><span class="lbl" id="tripTotals"></span></div>
+      <span class="lbl" id="tripTotals"></span>
     </div>
-
     <form class="trip-form" id="tripForm">
       <div class="field span2">
         <label class="lbl" for="fCountry">Country</label>
         <input type="text" id="fCountry" placeholder="Greece" autocomplete="off">
       </div>
-      <div class="field">
-        <label class="lbl" for="fEntry">Entry date</label>
-        <input type="date" id="fEntry" required>
-      </div>
-      <div class="field">
-        <label class="lbl" for="fExit">Exit date</label>
-        <input type="date" id="fExit" required>
-      </div>
+      <div class="field"><label class="lbl" for="fEntry">Entry date</label><input type="date" id="fEntry" required></div>
+      <div class="field"><label class="lbl" for="fExit">Exit date</label><input type="date" id="fExit" required></div>
       <div class="ctrls">
         <button type="submit" class="primary" id="btnSave">Add trip</button>
         <button type="button" id="btnCancelEdit" hidden>Cancel</button>
       </div>
     </form>
-
     <div class="tbl-scroll">
       <table class="trips">
-        <thead>
-          <tr><th>Country</th><th>Entry</th><th>Exit</th><th>Days</th><th></th><th></th></tr>
-        </thead>
+        <thead><tr><th>Country</th><th>Entry</th><th>Exit</th><th>Days</th><th>Status</th><th></th></tr></thead>
         <tbody id="tripBody"></tbody>
       </table>
     </div>
@@ -397,27 +330,57 @@ table.trips td.act button{padding:5px 8px; font-size:10px}
   <!-- ================= PLANNER ================= -->
   <section class="card" aria-labelledby="p-h">
     <div class="panel-head">
-      <div>
-        <h2 id="p-h">Plan a trip</h2>
-        <p style="color:var(--ink-2); font-size:13.5px; margin-top:6px">Test a stay before you book it. Checked against every single day of the trip, not just the last one.</p>
-      </div>
+      <div><h2 id="p-h">Plan a trip</h2><p class="hint">Test a stay before you book it. Checked against every single day of the trip, not just the last one.</p></div>
     </div>
     <form class="plan-form" id="planForm">
-      <div class="field">
-        <label class="lbl" for="pEntry">Arrive</label>
-        <input type="date" id="pEntry" required>
-      </div>
-      <div class="field">
-        <label class="lbl" for="pExit">Leave</label>
-        <input type="date" id="pExit" required>
-      </div>
-      <div class="field">
-        <label class="lbl" for="pCountry">Country</label>
-        <input type="text" id="pCountry" placeholder="Greece" autocomplete="off">
-      </div>
+      <div class="field"><label class="lbl" for="pEntry">Arrive</label><input type="date" id="pEntry" required></div>
+      <div class="field"><label class="lbl" for="pExit">Leave</label><input type="date" id="pExit" required></div>
+      <div class="field"><label class="lbl" for="pCountry">Country</label><input type="text" id="pCountry" placeholder="Greece" autocomplete="off"></div>
       <div class="ctrls"><button type="submit" class="primary">Check</button></div>
     </form>
     <div id="planOut"></div>
+  </section>
+
+  <!-- ================= SYNC ================= -->
+  <section class="card" aria-labelledby="s-h">
+    <div class="panel-head">
+      <div>
+        <h2 id="s-h">Sync across your devices</h2>
+        <p class="hint">Keeps one shared list in a private GitHub repository, so phone, desktop and browser all show the same trips. Everything still works offline; changes sync when you come back.</p>
+      </div>
+      <div class="ctrls"><button type="button" id="btnSyncNow">Sync now</button></div>
+    </div>
+    <div id="syncNotice"></div>
+    <div class="sync-form">
+      <div class="field">
+        <label class="lbl" for="cfgRepo">Private repository</label>
+        <input type="text" id="cfgRepo" placeholder="asarhad/schengen-data" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="field">
+        <label class="lbl" for="cfgPath">File path</label>
+        <input type="text" id="cfgPath" placeholder="trips.json" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="field" style="grid-column:1/-1">
+        <label class="lbl" for="cfgToken">Access token</label>
+        <input type="password" id="cfgToken" placeholder="github_pat_…" autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+    <div class="ctrls">
+      <button type="button" class="primary" id="btnConnect">Connect &amp; sync</button>
+      <button type="button" class="danger" id="btnDisconnect">Disconnect this device</button>
+    </div>
+    <div class="sync-state" id="syncState">Not connected — trips are saved in this browser only.</div>
+    <details class="fold">
+      <summary>How to set this up (once)</summary>
+      <ol class="steps">
+        <li>On GitHub, create a <b>private</b> repository — <code>schengen-data</code> is a good name. Leave it empty.</li>
+        <li>Go to <b>Settings → Developer settings → Personal access tokens → Fine-grained tokens</b> and generate a new token.</li>
+        <li>Under <b>Repository access</b> choose <b>Only select repositories</b> and pick that one repo. Under <b>Permissions → Repository permissions</b> set <b>Contents</b> to <b>Read and write</b>. Nothing else is needed.</li>
+        <li>Give it an expiry date you're comfortable with, generate it, and copy the token.</li>
+        <li>Paste the repository as <code>owner/name</code> and the token above, then press <b>Connect &amp; sync</b>. Repeat only the paste step on each other device.</li>
+      </ol>
+      <p class="hint" style="margin-top:14px">The token is stored in this browser and sent only to <code>api.github.com</code>. It can read and write that one repository and nothing else, and you can revoke it on GitHub at any time. Two devices editing at once are merged per trip — the most recent edit of each trip wins, and deletions are recorded so they don't come back.</p>
+    </details>
   </section>
 
   <!-- ================= RULES ================= -->
@@ -425,17 +388,17 @@ table.trips td.act button{padding:5px 8px; font-size:10px}
     <div class="panel-head"><h2 id="r-h">The rules this applies</h2></div>
     <ol>
       <li><b>90 days maximum in any rolling 180-day period.</b> Not "90 days per half-year" — the window moves with you, one day at a time.</li>
-      <li><b>The window looks backwards.</b> For any date, count the days you were inside Schengen on that date and the 179 days before it. Anything older has already dropped out.</li>
+      <li><b>The window looks backwards.</b> For any date, count the days you were inside Schengen on that date and the 179 days before it. Anything older has already dropped out, which is why your allowance grows again as time passes.</li>
       <li><b>Entry day and exit day each count as a full day</b>, however briefly you were in the country. 28 Aug to 14 Sep is 18 days, not 17.</li>
       <li><b>All Schengen states share one 90-day budget.</b> Greece, Spain, Italy, Croatia, Switzerland, Norway and the rest all draw on the same allowance. Ireland and Cyprus sit outside it.</li>
-      <li><b>A trip is legal only if the limit holds on every day of it.</b> Passing the test on your departure date is not enough — the figures below use the worst day of the trip.</li>
-      <li><b>Days on a national long-stay (D) visa or a residence permit do not count</b> toward the 90. Only leave those out of the trips list.</li>
+      <li><b>A trip is legal only if the limit holds on every day of it.</b> Passing the test on your departure date is not enough — the figures here use the worst day.</li>
+      <li><b>Days on a national long-stay (D) visa or a residence permit do not count</b> toward the 90. Simply leave those out of the trips list.</li>
     </ol>
     <p class="cite">Regulation (EU) 2016/399 — Schengen Borders Code, Article 6(1)(b)</p>
   </section>
 
   <footer class="foot">
-    <p class="disclaimer">Your data lives in this browser only — nothing is uploaded. Export a copy before clearing site data or switching devices. This is a planning aid, not legal advice; border officers count from your passport stamps.</p>
+    <p class="disclaimer">A planning aid, not legal advice — border officers count from the stamps in your passport, so keep a margin.</p>
     <div class="ctrls">
       <button type="button" id="btnExport">Export</button>
       <button type="button" id="btnImport">Import</button>
@@ -452,7 +415,7 @@ table.trips td.act button{padding:5px 8px; font-size:10px}
 "use strict";
 
 /* ============================================================
-   Dates as integer day numbers — no timezone drift, ever
+   Dates as integer day numbers — no timezone or DST drift
    ============================================================ */
 const DAY = 86400000;
 const toN   = iso => Math.floor(Date.UTC(+iso.slice(0,4), +iso.slice(5,7)-1, +iso.slice(8,10)) / DAY);
@@ -461,14 +424,16 @@ const parts = n   => { const d = new Date(n * DAY); return {y:d.getUTCFullYear()
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const fmt  = n => { const p = parts(n); return p.d + " " + MONTHS[p.m] + " " + p.y; };
 const fmtS = n => { const p = parts(n); return p.d + " " + MONTHS[p.m]; };
+// Local calendar day — this is what makes the count advance at midnight.
 function todayN(){ const d = new Date(); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / DAY); }
 
-const WINDOW = 180, LIMIT = 90, KEY = "schengen-90-180-v1";
+const WINDOW = 180, LIMIT = 90;
+const KEY = "schengen-90-180-v2", CFG_KEY = "schengen-sync-v1";
+const TOMBSTONE_TTL = 420; // days a deletion is remembered before it is purged
 
 /* ============================================================
    Rolling-window maths
    ============================================================ */
-// Merge overlapping/touching ranges so shared days are never double-counted.
 function mergeAll(ivs){
   const s = ivs.slice().sort((a,b) => a[0]-b[0]);
   const out = [];
@@ -479,16 +444,12 @@ function mergeAll(ivs){
   }
   return out;
 }
-// Do any two ranges genuinely share a day?
 function findOverlaps(list){
   const s = list.slice().sort((a,b) => toN(a.entry) - toN(b.entry));
   const hits = [];
-  for (let i=1; i<s.length; i++){
-    if (toN(s[i].entry) <= toN(s[i-1].exit)) hits.push([s[i-1], s[i]]);
-  }
+  for (let i=1; i<s.length; i++) if (toN(s[i].entry) <= toN(s[i-1].exit)) hits.push([s[i-1], s[i]]);
   return hits;
 }
-// Days present in the 180-day window that ENDS on endN (endN itself included).
 function countAt(merged, endN){
   const startN = endN - (WINDOW - 1);
   let c = 0;
@@ -498,21 +459,15 @@ function countAt(merged, endN){
   }
   return c;
 }
-// The peak only ever lands on a day you were present, so scan just those.
+// The peak only ever lands on a day of presence, so scan just those.
 function peak(merged){
   let max = 0, at = null;
-  for (const [a,b] of merged){
-    for (let n = a; n <= b; n++){
-      const c = countAt(merged, n);
-      if (c > max){ max = c; at = n; }
-    }
+  for (const [a,b] of merged) for (let n = a; n <= b; n++){
+    const c = countAt(merged, n);
+    if (c > max){ max = c; at = n; }
   }
   return {max, at};
 }
-function tripsToIv(list){
-  return list.map(t => [toN(t.entry), toN(t.exit)]).filter(iv => iv[1] >= iv[0]);
-}
-// Longest legal stay starting on entryN, given everything already booked.
 function maxLegalExit(baseIv, entryN, cap){
   cap = cap || 400;
   let best = null;
@@ -522,143 +477,284 @@ function maxLegalExit(baseIv, entryN, cap){
   }
   return best;
 }
-// Earliest date a stay of `len` days fits legally, searching forward from fromN.
 function earliestStart(baseIv, fromN, len, horizon){
   horizon = horizon || 400;
-  for (let s = fromN; s < fromN + horizon; s++){
+  for (let s = fromN; s < fromN + horizon; s++)
     if (peak(mergeAll(baseIv.concat([[s, s + len - 1]]))).max <= LIMIT) return s;
-  }
   return null;
 }
 
 /* ============================================================
-   Storage
+   Records — every trip carries updatedAt so devices can merge,
+   and deletions leave a tombstone so they propagate instead of
+   being resurrected by the other device's copy.
    ============================================================ */
 const SEED = [
-  {id:"t1", country:"Greece", entry:"2026-05-23", exit:"2026-06-29"},
-  {id:"t2", country:"Greece", entry:"2026-08-28", exit:"2026-09-14"}
+  {id:"seed-gr-1", country:"Greece", entry:"2026-05-23", exit:"2026-06-29", updatedAt:"2026-01-01T00:00:00.000Z"},
+  {id:"seed-gr-2", country:"Greece", entry:"2026-08-28", exit:"2026-09-14", updatedAt:"2026-01-01T00:00:00.000Z"}
 ];
-let trips = [];
-function load(){
+let all = [];                                   // includes tombstones
+const live = () => all.filter(t => !t.deleted);
+const stamp = () => new Date().toISOString();
+const newId = () => "t" + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function normalise(list){
+  if (!Array.isArray(list)) return [];
+  return list.filter(t => t && typeof t.entry === "string" && typeof t.exit === "string" && /^\d{4}-\d{2}-\d{2}$/.test(t.entry))
+             .map(t => ({
+               id: t.id || newId(),
+               country: t.country || "Schengen",
+               entry: t.entry, exit: t.exit,
+               updatedAt: t.updatedAt || "1970-01-01T00:00:00.000Z",
+               deleted: !!t.deleted
+             }));
+}
+// Last edit of each record wins; a deletion is just an edit.
+function mergeRecords(a, b){
+  const map = new Map();
+  for (const t of a.concat(b)){
+    const prev = map.get(t.id);
+    if (!prev || t.updatedAt > prev.updatedAt) map.set(t.id, t);
+  }
+  const cutoff = new Date((todayN() - TOMBSTONE_TTL) * DAY).toISOString();
+  return Array.from(map.values()).filter(t => !(t.deleted && t.updatedAt < cutoff));
+}
+
+function loadLocal(){
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw){
-      const p = JSON.parse(raw);
-      if (Array.isArray(p)) return p.filter(t => t && t.entry && t.exit);
+    if (raw){ const p = JSON.parse(raw); if (Array.isArray(p)) return normalise(p); }
+    const old = localStorage.getItem("schengen-90-180-v1");   // migrate the first version
+    if (old){ const p = JSON.parse(old); if (Array.isArray(p)) return normalise(p.map(t => Object.assign({}, t, {updatedAt: stamp()}))); }
+  } catch(e){}
+  return normalise(SEED);
+}
+function saveLocal(){
+  try { localStorage.setItem(KEY, JSON.stringify(all)); } catch(e){}
+}
+function touch(){ saveLocal(); render(); scheduleSync(); }
+
+/* ============================================================
+   Sync — a JSON file in a private repo, via the GitHub contents API
+   ============================================================ */
+const cfg = {repo:"", path:"trips.json", token:""};
+const sync = {status:"off", msg:"", last:null, sha:null, busy:false, pending:false, timer:null};
+
+function loadCfg(){
+  try {
+    const raw = localStorage.getItem(CFG_KEY);
+    if (raw) Object.assign(cfg, JSON.parse(raw));
+  } catch(e){}
+}
+function saveCfg(){
+  try { localStorage.setItem(CFG_KEY, JSON.stringify(cfg)); } catch(e){}
+}
+const configured = () => !!(cfg.repo && cfg.token && cfg.path);
+
+function b64enc(str){
+  const bytes = new TextEncoder().encode(str);
+  let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+function b64dec(b64){
+  const bin = atob(String(b64).replace(/\s+/g, ""));
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+const apiUrl = () => "https://api.github.com/repos/" + cfg.repo.replace(/^\/+|\/+$/g,"") +
+                     "/contents/" + cfg.path.replace(/^\/+/,"").split("/").map(encodeURIComponent).join("/");
+const headers = () => ({
+  "Authorization": "Bearer " + cfg.token,
+  "Accept": "application/vnd.github+json",
+  "X-GitHub-Api-Version": "2022-11-28"
+});
+
+function friendlyError(res, body){
+  if (res.status === 401) return "GitHub rejected the token. It may have expired, or been revoked.";
+  if (res.status === 403) return "GitHub refused the request. Check the token has Contents: Read and write on this repository.";
+  if (res.status === 404) return "Repository or path not found. Check the owner/name spelling, and that the token lists this repository.";
+  if (res.status === 409 || res.status === 422) return "The file changed on another device at the same time. Retrying.";
+  return "GitHub returned " + res.status + (body && body.message ? " — " + body.message : "") + ".";
+}
+
+async function pullRemote(){
+  const res = await fetch(apiUrl() + "?ref=", {headers: headers(), cache: "no-store"}).catch(e => { throw new NetErr(e); });
+  if (res.status === 404) return {sha:null, trips:[]};      // first run: file not created yet
+  const body = await res.json().catch(() => null);
+  if (!res.ok){ const err = new Error(friendlyError(res, body)); err.status = res.status; throw err; }
+  let doc = {};
+  try { doc = JSON.parse(b64dec(body.content || "")); } catch(e){ doc = {}; }
+  return {sha: body.sha, trips: normalise(doc.trips || doc)};
+}
+async function pushRemote(trips, sha){
+  const payload = {schema:2, updatedAt: stamp(), trips};
+  const res = await fetch(apiUrl(), {
+    method: "PUT", headers: Object.assign({"Content-Type":"application/json"}, headers()),
+    body: JSON.stringify({
+      message: "schengen: " + trips.filter(t => !t.deleted).length + " trips @ " + toISO(todayN()),
+      content: b64enc(JSON.stringify(payload, null, 2)),
+      sha: sha || undefined
+    })
+  }).catch(e => { throw new NetErr(e); });
+  const body = await res.json().catch(() => null);
+  if (!res.ok){ const err = new Error(friendlyError(res, body)); err.status = res.status; throw err; }
+  return body.content ? body.content.sha : null;
+}
+function NetErr(e){
+  const err = new Error("Could not reach api.github.com. You may be offline, or this page is running somewhere that blocks outside requests.");
+  err.network = true; err.cause = e; return err;
+}
+NetErr.prototype = Object.create(Error.prototype);
+
+async function runSync(manual){
+  if (!configured()){ setSync("off", "Not connected — trips are saved in this browser only."); return; }
+  if (sync.busy){ sync.pending = true; return; }
+  sync.busy = true; setSync("busy", "Syncing…");
+  try {
+    for (let attempt = 0; attempt < 2; attempt++){
+      const remote = await pullRemote();
+      const merged = mergeRecords(all, remote.trips);
+      const changed = JSON.stringify(merged.slice().sort(byId)) !== JSON.stringify(remote.trips.slice().sort(byId));
+      all = merged; saveLocal(); render();
+      if (!changed){ sync.sha = remote.sha; break; }
+      try {
+        sync.sha = await pushRemote(merged, remote.sha);
+        break;
+      } catch(e){
+        if ((e.status === 409 || e.status === 422) && attempt === 0) continue;   // someone else wrote first
+        throw e;
+      }
     }
-  } catch(e){ /* corrupt or blocked storage — fall through to the seed */ }
-  return SEED.slice();
+    sync.last = new Date();
+    setSync("ok", "");
+  } catch(e){
+    setSync("err", e.message || String(e));
+    if (manual) console.error(e);
+  } finally {
+    sync.busy = false;
+    if (sync.pending){ sync.pending = false; setTimeout(() => runSync(false), 400); }
+  }
 }
-function save(){
-  try { localStorage.setItem(KEY, JSON.stringify(trips)); }
-  catch(e){ /* private mode: the session still works, it just won't persist */ }
+const byId = (a,b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+
+function scheduleSync(){
+  if (!configured()) return;
+  clearTimeout(sync.timer);
+  sync.timer = setTimeout(() => runSync(false), 1200);
 }
-const newId = () => "t" + Math.random().toString(36).slice(2,9);
-const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const sortTrips = () => trips.sort((a,b) => toN(a.entry) - toN(b.entry));
+function setSync(status, msg){
+  sync.status = status; sync.msg = msg;
+  renderSyncUI();
+}
+function agoText(d){
+  if (!d) return "";
+  const s = Math.round((Date.now() - d.getTime())/1000);
+  if (s < 45) return "just now";
+  if (s < 3600) return Math.round(s/60) + " min ago";
+  if (s < 86400) return Math.round(s/3600) + " h ago";
+  return Math.round(s/86400) + " d ago";
+}
 
 /* ============================================================
    Elements
    ============================================================ */
 const $ = id => document.getElementById(id);
-const el = {
-  mrz:$("mrz"), overlapNotice:$("overlapNotice"),
-  verdictDateLabel:$("verdictDateLabel"), gaugeNum:$("gaugeNum"), bar:$("bar"),
-  fRemain:$("fRemain"), fWindow:$("fWindow"), fFromToday:$("fFromToday"),
-  fRegain:$("fRegain"), fReset:$("fReset"), fWorst:$("fWorst"),
-  stamp:$("stamp"), stampMain:$("stampMain"), stampSub:$("stampSub"),
-  winEnd:$("winEnd"), btnToday:$("btnToday"), btnWorst:$("btnWorst"),
-  strip:$("strip"), months:$("months"), readout:$("readout"),
-  chart:$("chart"), chartTip:$("chartTip"), chartSummary:$("chartSummary"),
-  tripForm:$("tripForm"), fCountry:$("fCountry"), fEntry:$("fEntry"), fExit:$("fExit"),
-  btnSave:$("btnSave"), btnCancelEdit:$("btnCancelEdit"), tripBody:$("tripBody"), tripTotals:$("tripTotals"),
-  planForm:$("planForm"), pEntry:$("pEntry"), pExit:$("pExit"), pCountry:$("pCountry"), planOut:$("planOut"),
-  btnExport:$("btnExport"), btnImport:$("btnImport"), btnReset:$("btnReset"), fileIn:$("fileIn")
-};
+const el = {};
+["mrz","notices","verdictDateLabel","gaugeNum","bar","fRemain","fWindow","fFromToday","fRegain","fReset","fWorst",
+ "stamp","stampMain","stampSub","inclTentative","winEnd","btnToday","btnWorst","strip","months","readout",
+ "chart","chartTip","chartSummary","tripForm","fCountry","fEntry","fExit","btnSave","btnCancelEdit","tripBody",
+ "tripTotals","planForm","pEntry","pExit","pCountry","planOut","btnExport","btnImport","btnReset","fileIn",
+ "syncChip","syncChipTxt","syncNotice","cfgRepo","cfgPath","cfgToken","btnConnect","btnDisconnect","btnSyncNow","syncState"
+].forEach(k => el[k] = $(k));
 
 let winEndN = todayN();
+let followToday = true;
 let editingId = null;
 let lastPlan = null;
+
+/* ============================================================
+   Which trips feed the count
+   ============================================================ */
+function activeIv(){
+  const today = todayN();
+  let iv = live().map(t => [toN(t.entry), toN(t.exit)]).filter(x => x[1] >= x[0]);
+  if (!el.inclTentative.checked){
+    // Clip everything at today: "where do I stand right now, ignoring plans"
+    iv = iv.map(([a,b]) => [a, Math.min(b, today)]).filter(([a,b]) => b >= a);
+  }
+  return iv;
+}
 
 /* ============================================================
    Render
    ============================================================ */
 function render(){
-  sortTrips();
-  const iv = tripsToIv(trips);
-  const merged = mergeAll(iv);
   const today = todayN();
+  if (followToday) winEndN = today;
+  el.winEnd.value = toISO(winEndN);
 
-  el.mrz.textContent = "TODAY " + toISO(today).replace(/-/g,"") + " · " + trips.length + " TRIP" + (trips.length === 1 ? "" : "S");
+  const iv = activeIv();
+  const merged = mergeAll(iv);
 
-  renderOverlaps();
-  renderVerdict(merged, today);
+  el.mrz.textContent = "TODAY " + toISO(today).replace(/-/g,"") + " · " + live().length + " TRIP" + (live().length === 1 ? "" : "S");
+
+  renderNotices();
+  renderVerdict(merged, iv, today);
   renderStrip(merged, today);
   renderChart(merged, today);
-  renderTrips(merged, today);
+  renderTrips(today);
+  renderSyncUI();
 }
 
-function renderOverlaps(){
-  const hits = findOverlaps(trips.filter(t => toN(t.exit) >= toN(t.entry)));
-  if (!hits.length){ el.overlapNotice.innerHTML = ""; return; }
+function renderNotices(){
+  const hits = findOverlaps(live().filter(t => toN(t.exit) >= toN(t.entry)));
+  if (!hits.length){ el.notices.innerHTML = ""; return; }
   const lines = hits.map(([a,b]) =>
     esc(a.country || "Trip") + " (" + fmtS(toN(a.entry)) + "–" + fmtS(toN(a.exit)) + ") and " +
-    esc(b.country || "Trip") + " (" + fmtS(toN(b.entry)) + "–" + fmtS(toN(b.exit)) + ")"
-  ).join("; ");
-  el.overlapNotice.innerHTML =
-    '<div class="notice"><b>Overlapping trips</b>' + lines +
-    ' share days. Shared days are counted once, so the totals below are correct — but check the dates in case one was entered twice.</div>';
+    esc(b.country || "Trip") + " (" + fmtS(toN(b.entry)) + "–" + fmtS(toN(b.exit)) + ")").join("; ");
+  el.notices.innerHTML = '<div class="notice"><b>Overlapping trips</b>' + lines +
+    ' share days. Shared days are counted once so the totals stay correct — but check in case one was entered twice.</div>';
 }
 
-function renderVerdict(merged, today){
+function renderVerdict(merged, iv, today){
   const count = countAt(merged, winEndN);
   const remain = LIMIT - count;
   const wStart = winEndN - (WINDOW - 1);
 
-  el.verdictDateLabel.textContent = fmt(winEndN);
+  el.verdictDateLabel.textContent = fmt(winEndN) + (winEndN === today ? " (today)" : "");
   el.gaugeNum.textContent = count;
   el.gaugeNum.style.color = count > LIMIT ? "var(--crit)" : (remain <= 10 ? "var(--warn)" : "var(--ink)");
 
-  // bar: used up to 90, plus a red overflow section if it goes past
-  const over = Math.max(0, count - LIMIT);
-  const used = Math.min(count, LIMIT);
-  const total = Math.max(LIMIT, count);
-  el.bar.innerHTML =
-    '<div class="bar-used" style="width:' + (used / total * 100) + '%"></div>' +
-    (over ? '<div class="bar-over" style="width:' + (over / total * 100) + '%"></div>' : "");
+  const over = Math.max(0, count - LIMIT), used = Math.min(count, LIMIT), total = Math.max(LIMIT, count);
+  el.bar.innerHTML = '<div class="bar-used" style="width:' + (used/total*100) + '%"></div>' +
+                     (over ? '<div class="bar-over" style="width:' + (over/total*100) + '%"></div>' : "");
 
   el.fRemain.innerHTML = count > LIMIT
     ? '<span style="color:var(--crit)">' + over + ' over the limit</span>'
     : remain + ' <span class="muted">of 90</span>';
   el.fWindow.textContent = fmtS(wStart) + " – " + fmt(winEndN);
 
-  // Longest stay you could start today
-  const mx = maxLegalExit(tripsToIv(trips), today);
+  const mx = maxLegalExit(iv, today);
   el.fFromToday.innerHTML = mx === null
     ? '<span style="color:var(--crit)">0 days</span>'
     : (mx - today + 1) + ' <span class="muted">days, to ' + fmtS(mx) + '</span>';
 
-  // When the oldest block in the window expires
   const inWin = merged.map(([a,b]) => [Math.max(a, wStart), Math.min(b, winEndN)]).filter(([a,b]) => b >= a);
-  if (inWin.length){
-    const [a,b] = inWin[0];
-    el.fRegain.innerHTML = (b - a + 1) + ' <span class="muted">by ' + fmtS(b + WINDOW) + '</span>';
-  } else {
-    el.fRegain.innerHTML = '<span class="muted">nothing pending</span>';
-  }
+  el.fRegain.innerHTML = inWin.length
+    ? (inWin[0][1] - inWin[0][0] + 1) + ' <span class="muted">by ' + fmtS(inWin[0][1] + WINDOW) + '</span>'
+    : '<span class="muted">nothing pending</span>';
 
-  // Next date a full fresh 90 fits
-  const reset = earliestStart(tripsToIv(trips), today, LIMIT, 400);
-  el.fReset.innerHTML = reset === null
-    ? '<span class="muted">beyond 400 days</span>'
+  const reset = earliestStart(iv, today, LIMIT, 400);
+  el.fReset.innerHTML = reset === null ? '<span class="muted">beyond 400 days</span>'
     : (reset <= today ? '<span style="color:var(--ok)">available now</span>' : fmt(reset));
 
   const pk = peak(merged);
-  el.fWorst.innerHTML = pk.at === null
-    ? '<span class="muted">no trips yet</span>'
+  el.fWorst.innerHTML = pk.at === null ? '<span class="muted">no trips yet</span>'
     : pk.max + ' <span class="muted">on ' + fmtS(pk.at) + '</span>';
 
-  // The stamp reports on the whole plan, not just the selected date
   let state, main, sub;
   if (pk.max > LIMIT){
     state = "over"; main = "OVER BY " + (pk.max - LIMIT) + " DAY" + (pk.max - LIMIT === 1 ? "" : "S");
@@ -668,47 +764,36 @@ function renderVerdict(merged, today){
     sub = "only " + (LIMIT - pk.max) + " day" + (LIMIT - pk.max === 1 ? "" : "s") + " spare";
   } else {
     state = "ok"; main = "WITHIN LIMITS";
-    sub = trips.length ? "peaks " + pk.max + "/90" : "no trips recorded";
+    sub = live().length ? "peaks " + pk.max + "/90" : "no trips recorded";
   }
-  el.stamp.dataset.state = state;
-  el.stampMain.textContent = main;
-  el.stampSub.textContent = sub;
+  el.stamp.dataset.state = state; el.stampMain.textContent = main; el.stampSub.textContent = sub;
 }
 
 function renderStrip(merged, today){
   const wStart = winEndN - (WINDOW - 1);
   const inSet = n => merged.some(([a,b]) => n >= a && n <= b);
-
   let cells = "", monthCells = "";
   let runStart = 0, runMonth = parts(wStart).m, runYear = parts(wStart).y;
 
   for (let i = 0; i < WINDOW; i++){
-    const n = wStart + i;
-    const p = parts(n);
-    cells += '<div class="cell" data-n="' + n + '"' +
-      (inSet(n) ? ' data-in="1"' : "") +
-      (n > today ? ' data-future="1"' : "") +
-      (n === today ? ' data-today="1"' : "") + '></div>';
-
+    const n = wStart + i, p = parts(n);
+    cells += '<div class="cell" data-n="' + n + '"' + (inSet(n) ? ' data-in="1"' : "") +
+             (n > today ? ' data-future="1"' : "") + (n === today ? ' data-today="1"' : "") + '></div>';
     const isLast = i === WINDOW - 1;
     if (p.m !== runMonth || isLast){
       const span = (isLast && p.m === runMonth) ? (i - runStart + 1) : (i - runStart);
-      if (span > 0){
-        monthCells += '<div class="month" style="grid-column:span ' + span + '">' +
-          (span >= 4 ? MONTHS[runMonth] + (runMonth === 0 ? " " + String(runYear).slice(2) : "") : "") + '</div>';
-      }
+      if (span > 0) monthCells += '<div class="month" style="grid-column:span ' + span + '">' +
+        (span >= 4 ? MONTHS[runMonth] + (runMonth === 0 ? " " + String(runYear).slice(2) : "") : "") + '</div>';
       if (!(isLast && p.m === runMonth)){
         runStart = i; runMonth = p.m; runYear = p.y;
         if (isLast) monthCells += '<div class="month" style="grid-column:span 1"></div>';
       }
     }
   }
-  el.strip.innerHTML = cells;
-  el.months.innerHTML = monthCells;
-
+  el.strip.innerHTML = cells; el.months.innerHTML = monthCells;
   const count = countAt(merged, winEndN);
-  el.strip.setAttribute("aria-label",
-    "Window " + fmt(wStart) + " to " + fmt(winEndN) + ": " + count + " days used, " + (LIMIT - count) + " remaining.");
+  el.strip.setAttribute("aria-label", "Window " + fmt(wStart) + " to " + fmt(winEndN) + ": " +
+    count + " days used, " + (LIMIT - count) + " remaining.");
   setReadout(null, merged, today);
 }
 
@@ -719,69 +804,82 @@ function setReadout(n, merged, today){
       (c > LIMIT ? (c - LIMIT) + ' over' : (LIMIT - c) + ' remaining') + '</b> — hover the strip for any day.';
     return;
   }
+  const trip = live().find(t => n >= toN(t.entry) && n <= toN(t.exit));
   const inside = merged.some(([a,b]) => n >= a && n <= b);
-  const trip = trips.find(t => n >= toN(t.entry) && n <= toN(t.exit));
   const c = countAt(merged, n);
-  const where = inside
-    ? 'in <b>' + esc(trip && trip.country ? trip.country : "Schengen") + '</b> (day ' + (n - toN(trip.entry) + 1) + ' of that trip)'
+  const where = inside && trip
+    ? 'in <b>' + esc(trip.country || "Schengen") + '</b> (day ' + (n - toN(trip.entry) + 1) + ' of that trip)'
     : 'outside Schengen';
-  el.readout.innerHTML = '<b>' + fmt(n) + '</b> ' + (n > today ? "(planned) " : "") + '· ' + where +
+  el.readout.innerHTML = '<b>' + fmt(n) + '</b> ' + (n > today ? "(tentative) " : "") + '· ' + where +
     ' · <b>' + c + '</b> days used in the window ending that day · <b>' +
     (c > LIMIT ? (c - LIMIT) + ' over' : (LIMIT - c) + ' left') + '</b>';
 }
 
-function renderTrips(merged, today){
-  if (!trips.length){
+function renderTrips(today){
+  const list = live().slice().sort((a,b) => toN(a.entry) - toN(b.entry));
+  if (!list.length){
     el.tripBody.innerHTML = '<tr><td colspan="6" class="empty">No trips yet. Add your first entry and exit dates above.</td></tr>';
-    el.tripTotals.textContent = "";
-    return;
+    el.tripTotals.textContent = ""; return;
   }
-  let rows = "", total = 0;
-  for (const t of trips){
+  let rows = "", taken = 0, tentative = 0;
+  for (const t of list){
     const a = toN(t.entry), b = toN(t.exit);
     const days = b >= a ? b - a + 1 : 0;
-    total += days;
-    let chip = "";
-    if (a > today) chip = '<span class="chip future">Upcoming</span>';
-    else if (b >= today) chip = '<span class="chip now">In progress</span>';
-    else chip = '<span class="chip">Past</span>';
+    // A trip stops being tentative on its own, as the dates pass.
+    const doneDays = Math.max(0, Math.min(b, today) - a + 1);
+    taken += Math.min(doneDays, days);
+    tentative += days - Math.min(doneDays, days);
+    const chip = a > today ? '<span class="chip tentative">Tentative</span>'
+               : b >= today ? '<span class="chip now">In progress</span>'
+               : '<span class="chip">Taken</span>';
     const bad = b < a ? ' style="color:var(--crit)"' : "";
-    rows += '<tr>' +
+    rows += '<tr' + (a > today ? ' class="tentative"' : '') + '>' +
       '<td>' + esc(t.country || "—") + '</td>' +
       '<td class="n">' + fmt(a) + '</td>' +
       '<td class="n"' + bad + '>' + fmt(b) + (b < a ? " (before entry)" : "") + '</td>' +
-      '<td class="n">' + days + '</td>' +
-      '<td>' + chip + '</td>' +
-      '<td class="act">' +
-        '<button type="button" data-edit="' + t.id + '">Edit</button> ' +
-        '<button type="button" class="danger" data-del="' + t.id + '">Delete</button>' +
-      '</td></tr>';
+      '<td class="n">' + days + '</td><td>' + chip + '</td>' +
+      '<td class="act"><button type="button" data-edit="' + t.id + '">Edit</button> ' +
+      '<button type="button" class="danger" data-del="' + t.id + '">Delete</button></td></tr>';
   }
   el.tripBody.innerHTML = rows;
-  el.tripTotals.textContent = total + " days recorded in total";
+  el.tripTotals.textContent = taken + " days taken" + (tentative ? " · " + tentative + " tentative" : "");
+}
+
+function renderSyncUI(){
+  const chip = el.syncChip, txt = el.syncChipTxt;
+  if (!configured()){
+    chip.dataset.s = "off"; txt.textContent = "Local only";
+    el.syncState.innerHTML = "Not connected — trips are saved in this browser only.";
+  } else if (sync.status === "busy"){
+    chip.dataset.s = "busy"; txt.textContent = "Syncing";
+    el.syncState.innerHTML = "Syncing with <b>" + esc(cfg.repo) + "</b>…";
+  } else if (sync.status === "err"){
+    chip.dataset.s = "err"; txt.textContent = "Sync error";
+    el.syncState.innerHTML = '<span style="color:var(--crit)">' + esc(sync.msg) + '</span>' +
+      (sync.last ? ' Last good sync ' + agoText(sync.last) + '.' : '');
+  } else {
+    chip.dataset.s = "ok"; txt.textContent = sync.last ? "Synced " + agoText(sync.last) : "Connected";
+    el.syncState.innerHTML = "Synced with <b>" + esc(cfg.repo) + " / " + esc(cfg.path) + "</b>" +
+      (sync.last ? " — last update " + agoText(sync.last) + "." : ".");
+  }
+  el.btnSyncNow.disabled = !configured();
 }
 
 /* ============================================================
-   Chart — days used per day, against the 90 line
+   Chart
    ============================================================ */
 let chartPts = [], chartGeom = null;
-
-function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
 function renderChart(merged, today){
   const lastEnd = merged.length ? merged[merged.length-1][1] : today;
-  const from = today - 60;
-  const to   = Math.max(today + 240, lastEnd + 45);
-
+  const from = today - 60, to = Math.max(today + 240, lastEnd + 45);
   chartPts = [];
   for (let n = from; n <= to; n++) chartPts.push({n, c: countAt(merged, n)});
-
-  const hi = chartPts.reduce((m,p) => Math.max(m, p.c), 0);
-  const lo = chartPts.reduce((m,p) => Math.min(m, p.c), Infinity);
-  el.chartSummary.textContent =
-    "From " + fmt(from) + " to " + fmt(to) + ", your rolling total ranges between " + (isFinite(lo) ? lo : 0) +
-    " and " + hi + " days. The dashed line is the 90-day ceiling.";
-
+  const hi = chartPts.reduce((m,p) => Math.max(m,p.c), 0);
+  const lo = chartPts.reduce((m,p) => Math.min(m,p.c), Infinity);
+  el.chartSummary.textContent = "From " + fmt(from) + " to " + fmt(to) + ", the rolling total moves between " +
+    (isFinite(lo) ? lo : 0) + " and " + hi + " days. The dashed line is the 90-day ceiling.";
   drawChart();
 }
 
@@ -789,95 +887,72 @@ function drawChart(){
   const cv = el.chart;
   if (!cv || !chartPts.length) return;
   const box = cv.parentElement.getBoundingClientRect();
-  const w = Math.max(320, box.width), h = box.height;
-  const dpr = window.devicePixelRatio || 1;
-  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  const w = Math.max(320, box.width), h = box.height, dpr = window.devicePixelRatio || 1;
+  cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr);
   const ctx = cv.getContext("2d");
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.clearRect(0, 0, w, h);
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
 
-  const ink = cssVar("--ink"), ink3 = cssVar("--ink-3"), rule = cssVar("--rule");
-  const accent = cssVar("--accent"), crit = cssVar("--crit"), card = cssVar("--card");
-
+  const ink3 = cssVar("--ink-3"), rule = cssVar("--rule"), accent = cssVar("--accent"),
+        crit = cssVar("--crit"), card = cssVar("--card");
   const pad = {t:14, r:16, b:26, l:34};
   const pw = w - pad.l - pad.r, ph = h - pad.t - pad.b;
   const n0 = chartPts[0].n, n1 = chartPts[chartPts.length-1].n;
-  const yMax = Math.max(100, Math.ceil((chartPts.reduce((m,p) => Math.max(m,p.c), 0) + 8) / 10) * 10);
-  const X = n => pad.l + (n - n0) / (n1 - n0) * pw;
-  const Y = c => pad.t + ph - (c / yMax) * ph;
-  chartGeom = {X, Y, pad, pw, ph, n0, n1, w, h};
+  const yMax = Math.max(100, Math.ceil((chartPts.reduce((m,p)=>Math.max(m,p.c),0)+8)/10)*10);
+  const X = n => pad.l + (n-n0)/(n1-n0)*pw, Y = c => pad.t + ph - (c/yMax)*ph;
+  chartGeom = {X, Y, pad, pw, n0, n1};
 
-  // recessive grid
-  ctx.strokeStyle = rule; ctx.lineWidth = 1;
-  ctx.font = '10px ' + "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
-  ctx.fillStyle = ink3; ctx.textAlign = "right"; ctx.textBaseline = "middle";
-  for (const v of [0, 30, 60, 90]){
+  ctx.font = '10px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
+  ctx.strokeStyle = rule; ctx.lineWidth = 1; ctx.fillStyle = ink3;
+  ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  for (const v of [0,30,60,90]){
     if (v > yMax) continue;
     const y = Math.round(Y(v)) + 0.5;
-    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + pw, y); ctx.stroke();
-    ctx.fillText(String(v), pad.l - 7, Y(v));
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+pw,y); ctx.stroke();
+    ctx.fillText(String(v), pad.l-7, Y(v));
   }
-
-  // month ticks
   ctx.textAlign = "center"; ctx.textBaseline = "top";
   for (let n = n0; n <= n1; n++){
     if (parts(n).d !== 1) continue;
     const x = X(n);
-    ctx.strokeStyle = rule;
-    ctx.beginPath(); ctx.moveTo(x, pad.t + ph); ctx.lineTo(x, pad.t + ph + 4); ctx.stroke();
-    const p = parts(n);
-    if (pw / ((n1 - n0) / 30) > 34) ctx.fillText(MONTHS[p.m], x, pad.t + ph + 8);
+    ctx.strokeStyle = rule; ctx.beginPath(); ctx.moveTo(x, pad.t+ph); ctx.lineTo(x, pad.t+ph+4); ctx.stroke();
+    if (pw / ((n1-n0)/30) > 34) ctx.fillText(MONTHS[parts(n).m], x, pad.t+ph+8);
   }
 
-  // area fill
-  ctx.beginPath();
-  ctx.moveTo(X(chartPts[0].n), Y(0));
+  ctx.beginPath(); ctx.moveTo(X(chartPts[0].n), Y(0));
   for (const p of chartPts) ctx.lineTo(X(p.n), Y(p.c));
-  ctx.lineTo(X(chartPts[chartPts.length-1].n), Y(0));
-  ctx.closePath();
-  ctx.fillStyle = accent; ctx.globalAlpha = 0.13; ctx.fill(); ctx.globalAlpha = 1;
+  ctx.lineTo(X(chartPts[chartPts.length-1].n), Y(0)); ctx.closePath();
+  ctx.fillStyle = accent; ctx.globalAlpha = .13; ctx.fill(); ctx.globalAlpha = 1;
 
-  // the 90 ceiling
-  ctx.save();
-  ctx.setLineDash([5,4]); ctx.strokeStyle = crit; ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(pad.l, Y(LIMIT)); ctx.lineTo(pad.l + pw, Y(LIMIT)); ctx.stroke();
-  ctx.restore();
+  ctx.save(); ctx.setLineDash([5,4]); ctx.strokeStyle = crit; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(pad.l, Y(LIMIT)); ctx.lineTo(pad.l+pw, Y(LIMIT)); ctx.stroke(); ctx.restore();
 
-  // the series
   ctx.beginPath();
   chartPts.forEach((p,i) => i ? ctx.lineTo(X(p.n), Y(p.c)) : ctx.moveTo(X(p.n), Y(p.c)));
   ctx.strokeStyle = accent; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.stroke();
 
-  // today marker
   const today = todayN();
   if (today >= n0 && today <= n1){
-    const x = X(today), pt = chartPts[today - n0];
-    ctx.save();
-    ctx.setLineDash([2,3]); ctx.strokeStyle = ink3; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t + ph); ctx.stroke();
-    ctx.restore();
+    const x = X(today), pt = chartPts[today-n0];
+    ctx.save(); ctx.setLineDash([2,3]); ctx.strokeStyle = ink3; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t+ph); ctx.stroke(); ctx.restore();
     ctx.beginPath(); ctx.arc(x, Y(pt.c), 4.5, 0, Math.PI*2);
-    ctx.fillStyle = accent; ctx.fill();
-    ctx.lineWidth = 2; ctx.strokeStyle = card; ctx.stroke();
-    ctx.fillStyle = ink3; ctx.textAlign = x > pad.l + pw - 44 ? "right" : "left"; ctx.textBaseline = "top";
-    ctx.fillText("TODAY", x + (x > pad.l + pw - 44 ? -6 : 6), pad.t + 1);
+    ctx.fillStyle = accent; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = card; ctx.stroke();
+    ctx.fillStyle = ink3; ctx.textAlign = x > pad.l+pw-44 ? "right" : "left"; ctx.textBaseline = "top";
+    ctx.fillText("TODAY", x + (x > pad.l+pw-44 ? -6 : 6), pad.t+1);
   }
 }
 
 el.chart.addEventListener("mousemove", ev => {
   if (!chartGeom || !chartPts.length) return;
-  const r = el.chart.getBoundingClientRect();
-  const x = ev.clientX - r.left;
-  const g = chartGeom;
-  const frac = (x - g.pad.l) / g.pw;
-  const idx = Math.max(0, Math.min(chartPts.length-1, Math.round(frac * (g.n1 - g.n0))));
+  const r = el.chart.getBoundingClientRect(), g = chartGeom;
+  const idx = Math.max(0, Math.min(chartPts.length-1,
+    Math.round(((ev.clientX - r.left) - g.pad.l)/g.pw * (g.n1-g.n0))));
   const p = chartPts[idx];
-  const left = Math.min(Math.max(g.X(p.n) + 12, 4), r.width - 168);
-  el.chartTip.style.left = left + "px";
-  el.chartTip.style.top = Math.max(4, g.Y(p.c) - 46) + "px";
+  el.chartTip.style.left = Math.min(Math.max(g.X(p.n)+12, 4), r.width-172) + "px";
+  el.chartTip.style.top = Math.max(4, g.Y(p.c)-46) + "px";
   el.chartTip.style.opacity = "1";
   el.chartTip.innerHTML = '<div class="d">' + fmt(p.n) + '</div><div class="v">' + p.c + ' used · ' +
-    (p.c > LIMIT ? (p.c - LIMIT) + ' over' : (LIMIT - p.c) + ' left') + '</div>';
+    (p.c > LIMIT ? (p.c-LIMIT) + ' over' : (LIMIT-p.c) + ' left') + '</div>';
 });
 el.chart.addEventListener("mouseleave", () => { el.chartTip.style.opacity = "0"; });
 
@@ -886,23 +961,23 @@ el.chart.addEventListener("mouseleave", () => { el.chartTip.style.opacity = "0";
    ============================================================ */
 el.strip.addEventListener("mouseover", ev => {
   const c = ev.target.closest(".cell"); if (!c) return;
-  setReadout(+c.dataset.n, mergeAll(tripsToIv(trips)), todayN());
+  setReadout(+c.dataset.n, mergeAll(activeIv()), todayN());
 });
-el.strip.addEventListener("mouseleave", () => setReadout(null, mergeAll(tripsToIv(trips)), todayN()));
+el.strip.addEventListener("mouseleave", () => setReadout(null, mergeAll(activeIv()), todayN()));
+el.inclTentative.addEventListener("change", render);
 
 el.winEnd.addEventListener("change", () => {
   if (!el.winEnd.value) return;
-  winEndN = toN(el.winEnd.value);
-  render();
+  winEndN = toN(el.winEnd.value); followToday = (winEndN === todayN()); render();
 });
-el.btnToday.addEventListener("click", () => { winEndN = todayN(); el.winEnd.value = toISO(winEndN); render(); });
+el.btnToday.addEventListener("click", () => { followToday = true; winEndN = todayN(); render(); });
 el.btnWorst.addEventListener("click", () => {
-  const pk = peak(mergeAll(tripsToIv(trips)));
+  const pk = peak(mergeAll(activeIv()));
   if (pk.at === null) return;
-  winEndN = pk.at; el.winEnd.value = toISO(winEndN); render();
+  followToday = false; winEndN = pk.at; render();
 });
 
-/* ---- trips: add / edit ---- */
+/* ---- trips ---- */
 el.tripForm.addEventListener("submit", ev => {
   ev.preventDefault();
   const entry = el.fEntry.value, exit = el.fExit.value;
@@ -910,41 +985,35 @@ el.tripForm.addEventListener("submit", ev => {
   if (toN(exit) < toN(entry)){ alert("The exit date is before the entry date. Swap them and try again."); return; }
   const country = el.fCountry.value.trim() || "Schengen";
   if (editingId){
-    const t = trips.find(x => x.id === editingId);
-    if (t){ t.country = country; t.entry = entry; t.exit = exit; }
+    const t = all.find(x => x.id === editingId);
+    if (t) Object.assign(t, {country, entry, exit, updatedAt: stamp()});
     exitEditMode();
   } else {
-    trips.push({id:newId(), country, entry, exit});
+    all.push({id:newId(), country, entry, exit, updatedAt: stamp(), deleted:false});
   }
-  save(); el.tripForm.reset(); render();
+  el.tripForm.reset(); touch();
 });
 el.btnCancelEdit.addEventListener("click", () => { exitEditMode(); el.tripForm.reset(); });
 
 function enterEditMode(t){
   editingId = t.id;
-  el.fCountry.value = t.country || "";
-  el.fEntry.value = t.entry; el.fExit.value = t.exit;
-  el.btnSave.textContent = "Save changes";
-  el.btnCancelEdit.hidden = false;
-  el.fCountry.focus();
+  el.fCountry.value = t.country || ""; el.fEntry.value = t.entry; el.fExit.value = t.exit;
+  el.btnSave.textContent = "Save changes"; el.btnCancelEdit.hidden = false; el.fCountry.focus();
 }
-function exitEditMode(){
-  editingId = null;
-  el.btnSave.textContent = "Add trip";
-  el.btnCancelEdit.hidden = true;
-}
+function exitEditMode(){ editingId = null; el.btnSave.textContent = "Add trip"; el.btnCancelEdit.hidden = true; }
 
 el.tripBody.addEventListener("click", ev => {
   const del = ev.target.closest("[data-del]"), edit = ev.target.closest("[data-edit]");
   if (del){
-    const t = trips.find(x => x.id === del.dataset.del);
-    if (t && confirm("Delete " + (t.country || "this trip") + ", " + fmt(toN(t.entry)) + " to " + fmt(toN(t.exit)) + "?")){
-      trips = trips.filter(x => x.id !== del.dataset.del);
-      if (editingId === del.dataset.del) { exitEditMode(); el.tripForm.reset(); }
-      save(); render();
-    }
+    const t = all.find(x => x.id === del.dataset.del);
+    if (!t) return;
+    if (!confirm("Delete " + (t.country || "this trip") + ", " + fmt(toN(t.entry)) + " to " + fmt(toN(t.exit)) + "?")) return;
+    // Tombstone rather than drop, so the deletion reaches the other devices.
+    t.deleted = true; t.updatedAt = stamp();
+    if (editingId === t.id){ exitEditMode(); el.tripForm.reset(); }
+    touch();
   } else if (edit){
-    const t = trips.find(x => x.id === edit.dataset.edit);
+    const t = all.find(x => x.id === edit.dataset.edit);
     if (t) enterEditMode(t);
   }
 });
@@ -955,59 +1024,80 @@ el.planForm.addEventListener("submit", ev => {
   const entry = el.pEntry.value, exit = el.pExit.value;
   if (!entry || !exit) return;
   const a = toN(entry), b = toN(exit);
-  if (b < a){ el.planOut.innerHTML = '<div class="result" data-state="over"><div class="result-title">Dates are back to front</div><ul><li>The leaving date is before the arrival date.</li></ul></div>'; return; }
-
+  if (b < a){
+    el.planOut.innerHTML = '<div class="result" data-state="over"><div class="result-title">Dates are back to front</div>' +
+      '<ul><li>The leaving date is before the arrival date.</li></ul></div>'; return;
+  }
   const country = el.pCountry.value.trim() || "Schengen";
-  const len = b - a + 1;
-  const baseIv = tripsToIv(trips);
-  const withPlan = mergeAll(baseIv.concat([[a,b]]));
-  const pk = peak(withPlan);
-  const overall = countAt(withPlan, b);
+  const len = b - a + 1, baseIv = activeIv();
+  const pk = peak(mergeAll(baseIv.concat([[a,b]])));
+  const onExit = countAt(mergeAll(baseIv.concat([[a,b]])), b);
 
-  let state, title, items = [];
-  items.push('Requested stay: <b>' + len + ' day' + (len === 1 ? "" : "s") + '</b>, ' + fmt(a) + ' to ' + fmt(b) + ' inclusive.');
-
+  let state, title;
+  const items = ['Requested stay: <b>' + len + ' day' + (len===1?"":"s") + '</b>, ' + fmt(a) + ' to ' + fmt(b) + ' inclusive.'];
   if (pk.max > LIMIT){
     const over = pk.max - LIMIT;
-    state = "over";
-    title = "Over the limit by " + over + " day" + (over === 1 ? "" : "s");
+    state = "over"; title = "Over the limit by " + over + " day" + (over===1?"":"s");
     items.push('Worst day is <b>' + fmtS(pk.at) + '</b>, when the rolling total hits <b>' + pk.max + '/90</b>.');
     const mx = maxLegalExit(baseIv, a);
-    items.push(mx === null
-      ? 'You cannot legally enter on that date at all — you are already at the limit.'
-      : 'Arriving ' + fmtS(a) + ', you could stay until <b>' + fmt(mx) + '</b> — <b>' + (mx - a + 1) + ' day' + (mx - a + 1 === 1 ? "" : "s") + '</b>.');
+    items.push(mx === null ? 'You cannot legally enter on that date at all — you are already at the limit.'
+      : 'Arriving ' + fmtS(a) + ', you could stay until <b>' + fmt(mx) + '</b> — <b>' + (mx-a+1) + ' day' + (mx-a+1===1?"":"s") + '</b>.');
     const es = earliestStart(baseIv, a, len, 400);
-    items.push(es === null
-      ? 'No start date in the next 400 days fits the full ' + len + ' days.'
+    items.push(es === null ? 'No start date in the next 400 days fits the full ' + len + ' days.'
       : 'For the full <b>' + len + ' days</b>, the earliest legal arrival is <b>' + fmt(es) + '</b>.');
   } else {
     const spare = LIMIT - pk.max;
     state = spare <= 7 ? "tight" : "ok";
-    title = spare <= 7 ? "Legal, but only " + spare + " day" + (spare === 1 ? "" : "s") + " to spare" : "This stay is within the rules";
-    items.push('Peak usage during the trip is <b>' + pk.max + '/90</b> on <b>' + fmtS(pk.at) + '</b> — <b>' + spare + ' day' + (spare === 1 ? "" : "s") + '</b> in hand.');
-    items.push('On your departure date the rolling total will be <b>' + overall + '/90</b>.');
+    title = spare <= 7 ? "Legal, but only " + spare + " day" + (spare===1?"":"s") + " to spare" : "This stay is within the rules";
+    items.push('Peak usage during the trip is <b>' + pk.max + '/90</b> on <b>' + fmtS(pk.at) + '</b> — <b>' + spare + ' day' + (spare===1?"":"s") + '</b> in hand.');
+    items.push('On your departure date the rolling total will be <b>' + onExit + '/90</b>.');
     const mx = maxLegalExit(baseIv, a);
-    if (mx !== null && mx > b) items.push('You could extend to <b>' + fmt(mx) + '</b> and still be legal — <b>' + (mx - b) + '</b> extra day' + (mx - b === 1 ? "" : "s") + '.');
+    if (mx !== null && mx > b) items.push('You could extend to <b>' + fmt(mx) + '</b> and still be legal — <b>' + (mx-b) + '</b> extra day' + (mx-b===1?"":"s") + '.');
   }
-
-  lastPlan = {id:newId(), country, entry, exit};
-  el.planOut.innerHTML =
-    '<div class="result" data-state="' + state + '">' +
-      '<div class="result-title">' + esc(title) + '</div>' +
-      '<ul>' + items.map(i => '<li>' + i + '</li>').join("") + '</ul>' +
-      '<div class="result-actions"><button type="button" id="btnAddPlan">Add this trip to my list</button></div>' +
-    '</div>';
+  lastPlan = {id:newId(), country, entry, exit, updatedAt:stamp(), deleted:false};
+  el.planOut.innerHTML = '<div class="result" data-state="' + state + '"><div class="result-title">' + esc(title) + '</div>' +
+    '<ul>' + items.map(i => '<li>' + i + '</li>').join("") + '</ul>' +
+    '<div class="result-actions"><button type="button" id="btnAddPlan">Add this trip to my list</button></div></div>';
   const btn = $("btnAddPlan");
   if (btn) btn.addEventListener("click", () => {
-    trips.push(lastPlan); save(); el.planForm.reset(); el.planOut.innerHTML = ""; render();
+    all.push(lastPlan); el.planForm.reset(); el.planOut.innerHTML = ""; touch();
   });
 });
 
-/* ---- data management ---- */
+/* ---- sync controls ---- */
+el.btnConnect.addEventListener("click", async () => {
+  cfg.repo = el.cfgRepo.value.trim();
+  cfg.path = (el.cfgPath.value.trim() || "trips.json");
+  cfg.token = el.cfgToken.value.trim();
+  if (!/^[\w.-]+\/[\w.-]+$/.test(cfg.repo)){
+    el.syncNotice.innerHTML = '<div class="notice bad"><b>Check the repository</b>Enter it as <code>owner/name</code>, for example <code>asarhad/schengen-data</code>.</div>';
+    return;
+  }
+  if (!cfg.token){
+    el.syncNotice.innerHTML = '<div class="notice bad"><b>Token missing</b>Paste a fine-grained token with Contents: Read and write on that repository.</div>';
+    return;
+  }
+  el.syncNotice.innerHTML = "";
+  saveCfg();
+  await runSync(true);
+});
+el.btnDisconnect.addEventListener("click", () => {
+  if (!confirm("Stop syncing on this device? Your trips stay here, and the copy on GitHub is left untouched.")) return;
+  cfg.repo = ""; cfg.token = ""; saveCfg();
+  el.cfgToken.value = "";
+  sync.last = null; sync.sha = null;
+  setSync("off", "");
+});
+el.btnSyncNow.addEventListener("click", () => runSync(true));
+el.syncChip.addEventListener("click", () => {
+  if (configured()) runSync(true);
+  else document.getElementById("s-h").scrollIntoView({behavior:"smooth", block:"center"});
+});
+
+/* ---- export / import / reset ---- */
 el.btnExport.addEventListener("click", () => {
-  const blob = new Blob([JSON.stringify(trips, null, 2)], {type:"application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const blob = new Blob([JSON.stringify({schema:2, updatedAt:stamp(), trips:all}, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob), a = document.createElement("a");
   a.href = url; a.download = "schengen-trips-" + toISO(todayN()) + ".json";
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
@@ -1020,35 +1110,55 @@ el.fileIn.addEventListener("change", () => {
   r.onload = () => {
     try {
       const p = JSON.parse(r.result);
-      if (!Array.isArray(p)) throw new Error("not a list");
-      const clean = p.filter(t => t && typeof t.entry === "string" && typeof t.exit === "string")
-                     .map(t => ({id:t.id || newId(), country:t.country || "Schengen", entry:t.entry, exit:t.exit}));
-      if (!clean.length) throw new Error("no trips");
-      trips = clean; save(); render();
-    } catch(e){
-      alert("That file could not be read as a trip list. Use a file this page exported.");
-    }
+      const incoming = normalise(Array.isArray(p) ? p : p.trips);
+      if (!incoming.length) throw new Error("no trips");
+      all = mergeRecords(all, incoming);
+      touch();
+    } catch(e){ alert("That file could not be read as a trip list. Use a file this page exported."); }
     el.fileIn.value = "";
   };
   r.readAsText(f);
 });
 el.btnReset.addEventListener("click", () => {
   if (!confirm("Delete every trip and start over? Export first if you want a copy.")) return;
-  trips = []; save(); exitEditMode(); el.tripForm.reset(); el.planOut.innerHTML = ""; render();
+  const now = stamp();
+  all = all.map(t => Object.assign({}, t, {deleted:true, updatedAt:now}));
+  exitEditMode(); el.tripForm.reset(); el.planOut.innerHTML = ""; touch();
 });
 
-/* ---- redraw on resize and theme change ---- */
+/* ============================================================
+   Keep it live: redraw on resize/theme, roll over at midnight,
+   and re-sync when the tab comes back to the front.
+   ============================================================ */
 let rt;
 window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(drawChart, 120); });
 if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawChart);
 new MutationObserver(drawChart).observe(document.documentElement, {attributes:true, attributeFilter:["data-theme","class","style"]});
 
+let knownToday = todayN();
+setInterval(() => {
+  if (todayN() !== knownToday){ knownToday = todayN(); render(); }   // a day has passed: everything shifts
+  else if (sync.status === "ok") renderSyncUI();                      // keep "synced 3 min ago" honest
+}, 20000);
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && configured()){
+    if (!sync.last || Date.now() - sync.last.getTime() > 20000) runSync(false);
+  }
+});
+window.addEventListener("focus", () => {
+  if (configured() && (!sync.last || Date.now() - sync.last.getTime() > 30000)) runSync(false);
+});
+setInterval(() => { if (document.visibilityState === "visible" && configured()) runSync(false); }, 120000);
+
 /* ---- boot ---- */
-trips = load();
+loadCfg();
+all = loadLocal();
+el.cfgRepo.value = cfg.repo; el.cfgPath.value = cfg.path || "trips.json"; el.cfgToken.value = cfg.token;
 winEndN = todayN();
-el.winEnd.value = toISO(winEndN);
 el.pEntry.value = toISO(todayN());
 render();
+if (configured()) runSync(false);
 })();
 </script>
 </body>
