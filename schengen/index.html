@@ -489,10 +489,6 @@ function earliestStart(baseIv, fromN, len, horizon){
    and deletions leave a tombstone so they propagate instead of
    being resurrected by the other device's copy.
    ============================================================ */
-const SEED = [
-  {id:"seed-gr-1", country:"Greece", entry:"2026-05-23", exit:"2026-06-29", updatedAt:"2026-01-01T00:00:00.000Z"},
-  {id:"seed-gr-2", country:"Greece", entry:"2026-08-28", exit:"2026-09-14", updatedAt:"2026-01-01T00:00:00.000Z"}
-];
 let all = [];                                   // includes tombstones
 const live = () => all.filter(t => !t.deleted);
 const stamp = () => new Date().toISOString();
@@ -528,7 +524,7 @@ function loadLocal(){
     const old = localStorage.getItem("schengen-90-180-v1");   // migrate the first version
     if (old){ const p = JSON.parse(old); if (Array.isArray(p)) return normalise(p.map(t => Object.assign({}, t, {updatedAt: stamp()}))); }
   } catch(e){}
-  return normalise(SEED);
+  return [];
 }
 function saveLocal(){
   try { localStorage.setItem(KEY, JSON.stringify(all)); } catch(e){}
